@@ -3,7 +3,7 @@
 Git-versioned Acumatica configuration for **LAB5 Distribution**, a distribution demo company used for the [lab5.ca](https://lab5.ca) **Demo Tenant Factory** sales pitch.
 
 Rebuild from empty to company, masters, and linked transaction history
-(seed capital, buy + pay vendor, sell, invoice, collect).
+(seed capital, buy parts, assemble kits, sell, invoice, collect).
 Not a production ERP.
 
 Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acumatica-cli`).
@@ -17,8 +17,9 @@ Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acum
 | `config/setup/` | Financial year, master calendar, open periods |
 | `config/master/` | Inventory, warehouse, items, vendors, customers, module prefs |
 | `scenario/10-seed-capital.yaml` | Once-class owner capital JE (CLI skip-if-present when present) |
-| `scenario/20-buy-gateways.yaml` | Additive PO → receipt → bill → AP pay |
-| `scenario/30-sell.yaml` | Additive SO → ship → invoice → AR pay (three customers) |
+| `scenario/20-buy.yaml` | Additive component PO → receipt → bill → AP pay (four vendors) |
+| `scenario/30-build.yaml` | Additive kit assembly (parts → GW-EDGE / CELL / RAIL) |
+| `scenario/40-sell.yaml` | Additive SO → ship → invoice → AR pay (three customers) |
 | `docs/pitch-walkthrough.md` | Screen path ↔ seed map for the sales video |
 | `SPEC.md` | Spec-driven design (goal, invariants, tasks) |
 | `target.yaml` | Verified ERP / Default API matrix |
@@ -42,7 +43,7 @@ acu bootstrap
 # 3. Seed configuration (config/ umbrella; order = bootstrap → baseline → setup → master)
 acu apply config/
 
-# 4. Linked history for the pitch (once capital, then additive buy/sell)
+# 4. Linked history for the pitch (once capital, then buy/build/sell)
 acu run scenario/
 
 # 5. Prove no drift on seeded config
@@ -61,8 +62,9 @@ acu diff  config/bootstrap/ config/baseline/ config/setup/ config/master/
 | File | Class | Warm re-run |
 |------|-------|-------------|
 | `10-seed-capital.yaml` | **once** | CLI skips when capital JE already present; Owner Capital stays 50k (not stacked) |
-| `20-buy-gateways.yaml` | additive | New PO/receipt/bill/pay each run; inventory and cash deltas hold |
-| `30-sell.yaml` | additive | New SO/ship/invoice/pay pack each run; deltas hold |
+| `20-buy.yaml` | additive | New component PO/receipt/bill/pay each run; part and cash deltas hold |
+| `30-build.yaml` | additive | New kit assemblies each run; parts → kits deltas hold |
+| `40-sell.yaml` | additive | New SO/ship/invoice/pay pack each run; deltas hold |
 
 Primary compose: `acu apply config/` then `acu run scenario/`.
 
@@ -73,8 +75,9 @@ Short version:
 
 1. Company **LAB5 Distribution**
 2. Bank funded (Owner Capital → Checking 10100)
-3. Stock at **WH01** after the buy; vendor bill paid by WIRE
-4. Sales order, shipment, invoice, WIRE payment (all three customers paid)
+3. Components at **WH01** after the buy; four vendor bills paid by WIRE
+4. Kit assembly (parts → finished gateways)
+5. Sales order, shipment, invoice, WIRE payment (all three customers paid)
 
 ## Non-goals
 

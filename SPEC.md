@@ -6,12 +6,12 @@ Rebuildable Acumatica distribution demo tenant LAB5 Distribution for lab5.ca sal
 
 ## §C CONSTRAINTS
 
-- Industry flavor: distribution (stock inventory, seed capital, PO → bill → pay, SO → ship → invoice → payment).
+- Industry flavor: distribution + light assembly (stock inventory, seed capital, PO → bill → pay, kit assembly, SO → ship → invoice → payment).
 - Company display name: LAB5 Distribution (Acumatica org); pitch surface lab5.ca Demo Tenant Factory.
 - Seed lives in Git as acu YAML (`config/{bootstrap,baseline,setup,master}/`, `scenario/`); no secrets in YAML — creds stay `.env`.
 - Target matrix: `target.yaml` (erp 26.101.0225, default_api 25.200.001); tenant id from env (`ACU_TENANT=LAB5`).
 - Demo data only; not production cutover / not multi-industry catalog this pass.
-- Apply trees under `config/`; linked history under `scenario/` lifecycle files (once seed + additive buy/sell); not rename-only scaffold.
+- Apply trees under `config/`; linked history under `scenario/` lifecycle files (once seed + additive buy/build/sell); not rename-only scaffold.
 
 ## §I INTERFACES
 
@@ -23,8 +23,9 @@ Rebuildable Acumatica distribution demo tenant LAB5 Distribution for lab5.ca sal
 - yaml: `config/setup/*.yaml` → fin year, master calendar, open periods (actions)
 - yaml: `config/master/*.yaml` → inventory, warehouse, customers, vendors, items, module prefs
 - yaml: `scenario/10-seed-capital.yaml` → once-class owner capital JE (Dr 10100 / Cr 30000)
-- yaml: `scenario/20-buy-gateways.yaml` → additive PO → receipt → bill → AP pay
-- yaml: `scenario/30-sell.yaml` → additive SO → ship → invoice → AR pay (three-customer pack)
+- yaml: `scenario/20-buy.yaml` → additive component PO → receipt → bill → AP pay (four vendors)
+- yaml: `scenario/30-build.yaml` → additive kit assembly (parts → GW kits)
+- yaml: `scenario/40-sell.yaml` → additive SO → ship → invoice → AR pay (three-customer pack)
 - env: `ACU_BASE_URL`, `ACU_TENANT`, `ACU_API_VERSION`, `ACU_USER`, `ACU_PASSWORD` ! set for live apply
 - entity: Company (AcctCD/AcctName), Account, Ledger, Subaccount, UnitsOfMeasure, InventoryItem, Customer, Vendor, SalesOrder, …
 
@@ -35,11 +36,11 @@ V2: company-identity — org display name always `LAB5 Distribution`; org CD con
 V3: linked-history — every demo doc chains: customer/vendor → order → shipment/receipt → invoice/bill → payment; orphan demo docs forbidden
 V4: feature-closure — `config/bootstrap/features.yaml` enables every feature config/master/scenario YAML requires
 V5: apply-order — numbered YAML prefixes under `config/` encode alphabetical apply order; record referencing entity sorts after file creating it
-V6: pitch-surface — seed populates distribution pitch path: seed capital, stock item, available qty, vendor bill+pay, SO, shipment, invoice, customer payment (all closed) on standard screens
+V6: pitch-surface — seed populates distribution pitch path: seed capital, component buy+pay, kit assembly, kit qty, SO, shipment, invoice, customer payment (all closed) on standard screens
 V7: deterministic-rebuild — empty/reset tenant + `acu apply config/` + `acu run scenario/` → clean `acu diff config/`
 V8: no-secrets-in-seed — seed YAML + committed docs never contain passwords, API keys, host credentials
 V9: once-capital — seed-capital scenario is once-class; CLI skips when txn already present; Owner Capital not stacked by re-run (closes §B.1)
-V10: seed-layout — apply trees under `config/{bootstrap,baseline,setup,master}/`; `scenario/` = `10-seed-capital` + `20-buy-gateways` + `30-sell` only; monoscenario `buy-sell` forbidden; per-leg delta expects; primary compose `acu apply config/` then `acu run scenario/`
+V10: seed-layout — apply trees under `config/{bootstrap,baseline,setup,master}/`; `scenario/` = `10-seed-capital` + `20-buy` + `30-build` + `40-sell` only; monoscenario `buy-sell` forbidden; per-leg delta expects; primary compose `acu apply config/` then `acu run scenario/`
 
 ## §T TASKS
 
@@ -63,6 +64,8 @@ T16|x|split scenario into 10-seed-capital (once) 20-buy-gateways 30-sell; drop b
 T17|x|README + pitch-walkthrough: acu apply config/; acu run scenario/; once vs additive|V6,V7,V10
 T18|x|open GitHub issue kborovik/acumatica-cli: once-guard skip-if-present + template config/ + split scenario|V9,V10
 T19|.|after CLI once ships: warm second acu run scenario/ keeps capital 50000|V7,V9
+T20|x|split buy-build-sell: 20-buy parts (4 vendors) 30-build kit assembly 40-sell; drop finished-goods buy|V3,V6,V10
+T21|.|live probe KitAssembly Type/Status; green acu run scenario/ on buy+build+sell|V3,V6,V7
 
 ## §B BUGS
 

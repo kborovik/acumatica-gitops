@@ -11,32 +11,36 @@ Company: **LAB5 Distribution** (`AcctCD: LAB5`). Rebuild: see root `README.md`
 |------|-------------|----------------------|-------------------------|
 | 1. Clean company | Company (CS101500) | Org name LAB5 Distribution | `config/bootstrap/company.yaml` |
 | 2. Bank funded | Account Summary / Journal (GL301000) | Checking 10100 + Owner Capital 30000 | `scenario/10-seed-capital.yaml` (once-class) |
-| 3. Stock on hand | Inventory Summary (IN401000) | Qty after the buy | `scenario/20-buy-gateways.yaml` PO leg; items in `config/master/82-stock-items-kits.yaml` |
-| 4. Vendor paid | Bills (AP301000) + Checks (AP302000) | SHENZHEN bill closed; WIRE from 10100 | `20-buy-gateways` bill + pay steps |
-| 5. Sales order | Sales Orders (SO301000) | ACMEMFG / NORTHGRID / AGRISENSE | `scenario/30-sell.yaml` `so-*`; customers `config/master/76-customers.yaml` |
-| 6. Shipment | Shipments (SO302000) | Confirmed shipment from WH01 | `SalesOrderCreateShipment` + `ConfirmShipment` |
-| 7. Invoice | Invoices (SO303000) | Invoices closed after payment | `PrepareInvoice` + `ReleaseSalesInvoice` |
-| 8. Customer WIRE | Payments (AR302000) | All three customers paid in full to 10100 | `pay-acme` / `pay-northgrid` / `pay-agrisense` |
-| 9. Cash position | Account Summary (GL401000) | 10100 net +51,048 this full cycle | seed − AP pay + AR collections |
-| 10. Clean rebuild | CLI | Empty tenant, apply, run, clean diff | `acu apply config/`; `acu run scenario/`; `acu diff config/` (V7) |
+| 3. Parts on hand | Inventory Summary (IN401000) | Component qty after the buy | `scenario/20-buy.yaml` PO legs; parts in `config/master/80-stock-items-parts.yaml` |
+| 4. Vendors paid | Bills (AP301000) + Checks (AP302000) | SHENZHEN / ENCLOTEC / WAVELINK / MEMSTOR closed; WIRE from 10100 | `20-buy` bill + pay steps |
+| 5. Assemble kits | Kit Assembly (IN307000) | Parts → GW-EDGE / CELL / RAIL | `scenario/30-build.yaml`; specs `config/master/85-kit-specifications.yaml` |
+| 6. Kits on hand | Inventory Summary (IN401000) | Finished gateways after build | `30-build` qty deltas; kits `config/master/82-stock-items-kits.yaml` |
+| 7. Sales order | Sales Orders (SO301000) | ACMEMFG / NORTHGRID / AGRISENSE | `scenario/40-sell.yaml` `so-*`; customers `config/master/76-customers.yaml` |
+| 8. Shipment | Shipments (SO302000) | Confirmed shipment from WH01 | `SalesOrderCreateShipment` + `ConfirmShipment` |
+| 9. Invoice | Invoices (SO303000) | Invoices closed after payment | `PrepareInvoice` + `ReleaseSalesInvoice` |
+| 10. Customer WIRE | Payments (AR302000) | All three customers paid in full to 10100 | `pay-acme` / `pay-northgrid` / `pay-agrisense` |
+| 11. Cash position | Account Summary (GL401000) | 10100 net +51,048 this full cycle | seed − AP pay + AR collections |
+| 12. Clean rebuild | CLI | Empty tenant, apply, run, clean diff | `acu apply config/`; `acu run scenario/`; `acu diff config/` (V7) |
 
 ## Linked chain (V3)
 
 ```
 Seed capital (GL, once) to Checking 10100
-Vendor (SHENZHEN) to PO to Purchase Receipt to Bill to AP WIRE Payment
+Vendors (SHENZHEN / ENCLOTEC / WAVELINK / MEMSTOR) to PO to Purchase Receipt to Bill to AP WIRE Payment
+Kit assembly (parts to GW-EDGE / CELL / RAIL) at WH01 MAIN
 Customer (ACMEMFG / NORTHGRID / AGRISENSE) to SO to Shipment to Invoice to AR WIRE Payment
 ```
 
-No orphan demo docs: every scenario document references a prior captured number (`${po_*}`, `${rcpt_*}`, `${bill_*}`, `${ship_*}`, `${inv_*}`).
+No orphan demo docs: every scenario document references a prior captured number (`${po_*}`, `${rcpt_*}`, `${bill_*}`, `${asm_*}`, `${ship_*}`, `${inv_*}`).
 
 ## Once vs additive
 
 | Scenario | Class | Role in the pitch |
 |----------|-------|-------------------|
 | `10-seed-capital` | once | Funds Checking; skipped on warm re-run so Owner Capital does not stack |
-| `20-buy-gateways` | additive | Restocks WH01 and pays the vendor each run |
-| `30-sell` | additive | Full collect cycle for the three demo customers each run |
+| `20-buy` | additive | Restocks components at WH01 and pays the four vendors each run |
+| `30-build` | additive | Assembles kits from parts (exact BOM) each run |
+| `40-sell` | additive | Full collect cycle for the three demo customers each run |
 
 ## Master data the pitch depends on
 
