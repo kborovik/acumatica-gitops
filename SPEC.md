@@ -61,7 +61,7 @@ T14|x|pitch walkthrough + README + V6 reflect full cash cycle (no open-AR beat)|
 T15|x|move bootstrap/ baseline/ setup/ master/ under config/|V5,V10
 T16|x|split scenario into 10-seed-capital (once) 20-buy-gateways 30-sell; drop buy-sell.yaml; per-leg expects|V3,V9,V10
 T17|x|README + pitch-walkthrough: acu apply config/; acu run scenario/; once vs additive|V6,V7,V10
-T18|.|open GitHub issue kborovik/acumatica-cli: once-guard skip-if-present + template config/ + split scenario|V9,V10
+T18|x|open GitHub issue kborovik/acumatica-cli: once-guard skip-if-present + template config/ + split scenario|V9,V10
 T19|.|after CLI once ships: warm second acu run scenario/ keeps capital 50000|V7,V9
 
 ## §B BUGS
