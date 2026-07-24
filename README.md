@@ -2,7 +2,7 @@
 
 Git-versioned Acumatica configuration for **LAB5 Distribution**, a distribution demo company used for the [lab5.ca](https://lab5.ca) **Demo Tenant Factory** sales pitch.
 
-Rebuild from empty to company, masters, and linked transaction history (buy, assemble, sell, invoice, collect).
+Rebuild from empty to company, masters, and linked transaction history (buy, sell, invoice, collect).
 Not a production ERP.
 
 Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acumatica-cli`).
@@ -15,7 +15,7 @@ Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acum
 | `baseline/` | GL foundation (COA, ledger, subaccounts, UOMs) |
 | `setup/` | Financial year, master calendar, open periods |
 | `master/` | Inventory, warehouse, items, vendors, customers, module prefs |
-| `scenario/` | Linked transactions (`buy-build-sell.yaml`) |
+| `scenario/` | Linked transactions (`buy-sell.yaml`) |
 | `docs/pitch-walkthrough.md` | Screen path ↔ seed map for the sales video |
 | `SPEC.md` | Spec-driven design (goal, invariants, tasks) |
 | `target.yaml` | Verified ERP / Default API matrix |
@@ -54,7 +54,7 @@ See [docs/pitch-walkthrough.md](docs/pitch-walkthrough.md).
 Short version:
 
 1. Company **LAB5 Distribution**
-2. Stock at **WH01** after buy/build
+2. Stock at **WH01** after the buy
 3. Sales order, shipment, invoice, payment (ACMEMFG paid; others open AR)
 
 ## Non-goals

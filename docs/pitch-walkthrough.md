@@ -9,7 +9,7 @@ Company: **LAB5 Distribution** (`AcctCD: LAB5`). Rebuild: see root `README.md`.
 | Beat | Screen (ID) | What the camera shows | Seed / scenario driver |
 |------|-------------|----------------------|-------------------------|
 | 1. Clean company | Company (CS101500) | Org name LAB5 Distribution | `bootstrap/company.yaml` |
-| 2. Stock on hand | Inventory Summary (IN401000) | Qty after buy/build | `scenario/buy-build-sell.yaml` PO + kit legs; items in `master/80-*`, `82-*` |
+| 2. Stock on hand | Inventory Summary (IN401000) | Qty after the buy | `scenario/buy-sell.yaml` PO leg; items in `master/82-stock-items-kits.yaml` |
 | 3. Sales order | Sales Orders (SO301000) | Order for ACMEMFG / NORTHGRID / AGRISENSE | scenario `so-*` steps; customers `master/76-customers.yaml` |
 | 4. Shipment | Shipments (SO302000) | Confirmed shipment from WH01 | `SalesOrderCreateShipment` + `ConfirmShipment` |
 | 5. Invoice | Invoices (SO303000) | Open / closed invoice | `PrepareInvoice` + `ReleaseSalesInvoice` |
@@ -20,7 +20,7 @@ Company: **LAB5 Distribution** (`AcctCD: LAB5`). Rebuild: see root `README.md`.
 ## Linked chain (V3)
 
 ```
-Vendor (SHENZHEN…) to PO to Purchase Receipt to (kit assembly) to
+Vendor (SHENZHEN…) to PO to Purchase Receipt to
 Customer (ACMEMFG…) to SO to Shipment to Invoice to Payment
 ```
 
