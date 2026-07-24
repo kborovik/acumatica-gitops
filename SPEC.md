@@ -8,10 +8,10 @@ Rebuildable Acumatica distribution demo tenant LAB5 Distribution for lab5.ca sal
 
 - Industry flavor: distribution (stock inventory, SO → ship → invoice → payment).
 - Company display name: LAB5 Distribution (Acumatica org); pitch surface lab5.ca Demo Tenant Factory.
-- Seed lives in Git as acu YAML (`bootstrap/`, `baseline/`, `setup/`, future master/scenario dirs); no secrets in YAML — creds stay `.env`.
+- Seed lives in Git as acu YAML (`bootstrap/`, `baseline/`, `setup/`, `master/`, `scenario/`); no secrets in YAML — creds stay `.env`.
 - Target matrix: `target.yaml` (erp 26.101.0225, default_api 25.200.001); tenant id from env (`ACU_TENANT=LAB5`).
 - Demo data only; not production cutover / not multi-industry catalog this pass.
-- Scaffold today is finance-minimal (`Example Company`); distribution masters + linked history ! be added, not only renamed.
+- Distribution masters + linked buy-sell history live under `master/` + `scenario/`; not rename-only scaffold.
 
 ## §I INTERFACES
 
@@ -20,8 +20,8 @@ Rebuildable Acumatica distribution demo tenant LAB5 Distribution for lab5.ca sal
 - yaml: `bootstrap/*.yaml` → company, features, credit terms (bootstrap endpoint)
 - yaml: `baseline/*.yaml` → GL/subaccount/UOM foundation (Default + bootstrap endpoints)
 - yaml: `setup/*.yaml` → fin year, master calendar, open periods (actions)
-- yaml: `master/` ? → inventory, warehouse, customers, vendors, items, prices (to add)
-- yaml: `scenarios/` ? → linked SO/PO/shipment/invoice/payment history (to add)
+- yaml: `master/*.yaml` → inventory, warehouse, customers, vendors, items, module prefs
+- yaml: `scenario/` → linked PO/receipt/SO/shipment/invoice/payment history
 - env: `ACU_BASE_URL`, `ACU_TENANT`, `ACU_API_VERSION`, `ACU_USER`, `ACU_PASSWORD` ! set for live apply
 - entity: Company (AcctCD/AcctName), Account, Ledger, Subaccount, UnitsOfMeasure, InventoryItem, Customer, Vendor, SalesOrder, …
 
