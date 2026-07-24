@@ -2,26 +2,29 @@
 
 ## §G GOAL
 
-Rebuildable Acumatica distribution demo tenant LAB5 Distribution for lab5.ca sales-video pitch (Demo Tenant Factory): empty → company + masters + linked txn history; clean `acu diff` after apply.
+Rebuildable Acumatica distribution demo tenant LAB5 Distribution for lab5.ca sales-video pitch (Demo Tenant Factory): empty → config + linked txn history; clean `acu diff config/` after apply+run.
 
 ## §C CONSTRAINTS
 
-- Industry flavor: distribution (stock inventory, SO → ship → invoice → payment).
+- Industry flavor: distribution (stock inventory, seed capital, PO → bill → pay, SO → ship → invoice → payment).
 - Company display name: LAB5 Distribution (Acumatica org); pitch surface lab5.ca Demo Tenant Factory.
-- Seed lives in Git as acu YAML (`bootstrap/`, `baseline/`, `setup/`, `master/`, `scenario/`); no secrets in YAML — creds stay `.env`.
+- Seed lives in Git as acu YAML (`config/{bootstrap,baseline,setup,master}/`, `scenario/`); no secrets in YAML — creds stay `.env`.
 - Target matrix: `target.yaml` (erp 26.101.0225, default_api 25.200.001); tenant id from env (`ACU_TENANT=LAB5`).
 - Demo data only; not production cutover / not multi-industry catalog this pass.
-- Distribution masters + linked buy-sell history live under `master/` + `scenario/`; not rename-only scaffold.
+- Apply trees under `config/`; linked history under `scenario/` lifecycle files (once seed + additive buy/sell); not rename-only scaffold.
 
 ## §I INTERFACES
 
-- cmd: `acu apply <path>` → PUT/actions from YAML seed dirs
-- cmd: `acu diff <path>` → drift report vs live tenant
-- yaml: `bootstrap/*.yaml` → company, features, credit terms (bootstrap endpoint)
-- yaml: `baseline/*.yaml` → GL/subaccount/UOM foundation (Default + bootstrap endpoints)
-- yaml: `setup/*.yaml` → fin year, master calendar, open periods (actions)
-- yaml: `master/*.yaml` → inventory, warehouse, customers, vendors, items, module prefs
-- yaml: `scenario/` → linked PO/receipt/SO/shipment/invoice/payment history
+- cmd: `acu apply config/` → PUT/actions from config umbrella (bootstrap/baseline/setup/master)
+- cmd: `acu run scenario/` → ordered scenario YAMLs; once-class skip-if-present (CLI-enforced)
+- cmd: `acu diff config/` → drift report vs live tenant on apply trees
+- yaml: `config/bootstrap/*.yaml` → company, features, credit terms (bootstrap endpoint)
+- yaml: `config/baseline/*.yaml` → GL/subaccount/UOM foundation (Default + bootstrap endpoints)
+- yaml: `config/setup/*.yaml` → fin year, master calendar, open periods (actions)
+- yaml: `config/master/*.yaml` → inventory, warehouse, customers, vendors, items, module prefs
+- yaml: `scenario/10-seed-capital.yaml` → once-class owner capital JE (Dr 10100 / Cr 30000)
+- yaml: `scenario/20-buy-gateways.yaml` → additive PO → receipt → bill → AP pay
+- yaml: `scenario/30-sell.yaml` → additive SO → ship → invoice → AR pay (three-customer pack)
 - env: `ACU_BASE_URL`, `ACU_TENANT`, `ACU_API_VERSION`, `ACU_USER`, `ACU_PASSWORD` ! set for live apply
 - entity: Company (AcctCD/AcctName), Account, Ledger, Subaccount, UnitsOfMeasure, InventoryItem, Customer, Vendor, SalesOrder, …
 
@@ -30,11 +33,13 @@ Rebuildable Acumatica distribution demo tenant LAB5 Distribution for lab5.ca sal
 V1: demo-tenant-seed — artifact is Git-versioned Acumatica seed for rebuildable LAB5 Distribution demo (lab5.ca pitch); not production ERP
 V2: company-identity — org display name always `LAB5 Distribution`; org CD consistent across company, ledger-company, open-periods
 V3: linked-history — every demo doc chains: customer/vendor → order → shipment/receipt → invoice/bill → payment; orphan demo docs forbidden
-V4: feature-closure — `bootstrap/features.yaml` enables every feature baseline/master/scenario YAML requires
-V5: apply-order — numbered YAML prefixes encode alphabetical apply order; record referencing entity sorts after file creating it
-V6: pitch-surface — seed populates distribution pitch path: stock item, available qty, SO, shipment, invoice, payment, AR open balance on standard screens
-V7: deterministic-rebuild — empty/reset tenant + full seed apply → clean `acu diff` on seeded paths
+V4: feature-closure — `config/bootstrap/features.yaml` enables every feature config/master/scenario YAML requires
+V5: apply-order — numbered YAML prefixes under `config/` encode alphabetical apply order; record referencing entity sorts after file creating it
+V6: pitch-surface — seed populates distribution pitch path: seed capital, stock item, available qty, vendor bill+pay, SO, shipment, invoice, customer payment (all closed) on standard screens
+V7: deterministic-rebuild — empty/reset tenant + `acu apply config/` + `acu run scenario/` → clean `acu diff config/`
 V8: no-secrets-in-seed — seed YAML + committed docs never contain passwords, API keys, host credentials
+V9: once-capital — seed-capital scenario is once-class; CLI skips when txn already present; Owner Capital not stacked by re-run (closes §B.1)
+V10: seed-layout — apply trees under `config/{bootstrap,baseline,setup,master}/`; `scenario/` = `10-seed-capital` + `20-buy-gateways` + `30-sell` only; monoscenario `buy-sell` forbidden; per-leg delta expects; primary compose `acu apply config/` then `acu run scenario/`
 
 ## §T TASKS
 
@@ -49,7 +54,17 @@ T7|x|seed SO → shipment → invoice → payment chain (linked)|V3,V6
 T8|x|document pitch walkthrough (screen path + which seed rows drive each beat)|V1,V6
 T9|x|`acu apply` full seed + `acu diff` green on target tenant|V7
 T10|x|README: rebuild steps, pitch path, non-goals|V1,V8
+T11|x|seed capital GL batch (Dr 10100 / Cr 30000) in scenario; cash funded for AP|V3,V6
+T12|x|PO receipt → AP bill → AP WIRE Check; clear PO accrual + AP|V3,V6
+T13|x|AR WIRE for all three scenario customers; cash + AP/AR expects green|V3,V6
+T14|x|pitch walkthrough + README + V6 reflect full cash cycle (no open-AR beat)|V1,V6
+T15|.|move bootstrap/ baseline/ setup/ master/ under config/|V5,V10
+T16|.|split scenario into 10-seed-capital (once) 20-buy-gateways 30-sell; drop buy-sell.yaml; per-leg expects|V3,V9,V10
+T17|.|README + pitch-walkthrough: acu apply config/; acu run scenario/; once vs additive|V6,V7,V10
+T18|.|open GitHub issue kborovik/acumatica-cli: once-guard skip-if-present + template config/ + split scenario|V9,V10
+T19|.|after CLI once ships: warm second acu run scenario/ keeps capital 50000|V7,V9
 
 ## §B BUGS
 
 id|date|cause|fix
+B1|2026-07-24|monoscenario buy-sell re-posts seed capital each run; Owner Capital stacks N times 50k|V9
