@@ -1,15 +1,15 @@
-# LAB5 Distribution — sales-video pitch walkthrough
+# LAB5 Electronics Inc. — sales-video pitch walkthrough
 
 Maps each demo beat to seed rows for the [lab5.ca Demo Tenant Factory](https://lab5.ca/services/demo-tenant-factory) pitch.
 
-Company: **LAB5 Distribution** (`AcctCD: LAB5`). Rebuild: see root `README.md`
+Company: **LAB5 Electronics Inc.** (`AcctCD: LAB5`). Rebuild: see root `README.md`
 (`acu apply config/` then `acu run scenario/`).
 
 ## Pitch path (screens)
 
 | Beat | Screen (ID) | What the camera shows | Seed / scenario driver |
 |------|-------------|----------------------|-------------------------|
-| 1. Clean company | Company (CS101500) | Org name LAB5 Distribution | `config/bootstrap/company.yaml` |
+| 1. Clean company | Company (CS101500) | Org name LAB5 Electronics Inc. | `config/bootstrap/company.yaml` |
 | 2. Bank funded | Account Summary / Journal (GL301000) | Checking 10100 + Owner Capital 30000 | `scenario/10-seed-capital.yaml` (once-class) |
 | 3. Parts on hand | Inventory Summary (IN401000) | Component qty after the buy | `scenario/20-buy.yaml` PO legs; parts in `config/master/80-stock-items-parts.yaml` |
 | 4. Vendors paid | Bills (AP301000) + Checks (AP302000) | SHENZHEN / ENCLOTEC / WAVELINK / MEMSTOR closed; WIRE from 10100 | `20-buy` bill + pay steps |

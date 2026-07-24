@@ -20,7 +20,7 @@
 # captures the server-assigned bill number (acu run filter get).
 # Requires Checking 10100 funded (scenario/10-seed-capital.yaml).
 scenario: buy
-description: Buy kit components (PO receipt bill+pay) for light-assembly build
+description: Buy kit components (PO receipt bill+pay) for manufacturer build
 steps:
 # ---- buy: SHENZHEN (boards / modems) ---------------------------------
 - id: po-shenzhen

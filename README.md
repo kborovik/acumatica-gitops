@@ -1,9 +1,9 @@
-# LAB5 Distribution — Acumatica demo tenant seed
+# LAB5 Electronics Inc. — Acumatica demo tenant seed
 
-Git-versioned Acumatica configuration for **LAB5 Distribution**, a distribution demo company used for the [lab5.ca](https://lab5.ca) **Demo Tenant Factory** sales pitch.
+Git-versioned Acumatica configuration for **LAB5 Electronics Inc.**, an electronics manufacturer demo company used for the [lab5.ca](https://lab5.ca) **Demo Tenant Factory** sales pitch.
 
 Rebuild from empty to company, masters, and linked transaction history
-(seed capital, buy parts, assemble kits, sell, invoice, collect).
+(seed capital, buy components, assemble products, sell, invoice, collect).
 Not a production ERP.
 
 Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acumatica-cli`).
@@ -73,7 +73,7 @@ Primary compose: `acu apply config/` then `acu run scenario/`.
 See [docs/pitch-walkthrough.md](docs/pitch-walkthrough.md).
 Short version:
 
-1. Company **LAB5 Distribution**
+1. Company **LAB5 Electronics Inc.**
 2. Bank funded (Owner Capital → Checking 10100)
 3. Components at **WH01** after the buy; four vendor bills paid by WIRE
 4. Kit assembly (parts → finished gateways)
@@ -82,7 +82,7 @@ Short version:
 ## Non-goals
 
 - Production cutover / opening balances from a legacy system
-- Multi-industry catalog (this seed is IoT gateway distribution / light assembly)
+- Multi-industry catalog (this seed is IoT gateway manufacturing / kit assembly)
 - Secrets or host credentials in Git (`V8`)
 
 ## Target matrix

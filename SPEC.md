@@ -1,13 +1,13 @@
-# LAB5 Distribution — Acumatica demo tenant seed
+# LAB5 Electronics Inc. — Acumatica demo tenant seed
 
 ## §G GOAL
 
-Rebuildable Acumatica distribution demo tenant LAB5 Distribution for lab5.ca sales-video pitch (Demo Tenant Factory): empty → config + linked txn history; clean `acu diff config/` after apply+run.
+Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca sales-video pitch (Demo Tenant Factory): empty → config + linked txn history; clean `acu diff config/` after apply+run.
 
 ## §C CONSTRAINTS
 
-- Industry flavor: distribution + light assembly (stock inventory, seed capital, PO → bill → pay, kit assembly, SO → ship → invoice → payment).
-- Company display name: LAB5 Distribution (Acumatica org); pitch surface lab5.ca Demo Tenant Factory.
+- Industry flavor: electronics manufacturing (stock inventory, seed capital, PO → bill → pay, kit assembly, SO → ship → invoice → payment).
+- Company display name: LAB5 Electronics Inc. (Acumatica org); pitch surface lab5.ca Demo Tenant Factory.
 - Seed lives in Git as acu YAML (`config/{bootstrap,baseline,setup,master}/`, `scenario/`); no secrets in YAML — creds stay `.env`.
 - Target matrix: `target.yaml` (erp 26.101.0225, default_api 25.200.001); tenant id from env (`ACU_TENANT=LAB5`).
 - Demo data only; not production cutover / not multi-industry catalog this pass.
@@ -31,12 +31,12 @@ Rebuildable Acumatica distribution demo tenant LAB5 Distribution for lab5.ca sal
 
 ## §V INVARIANTS
 
-V1: demo-tenant-seed — artifact is Git-versioned Acumatica seed for rebuildable LAB5 Distribution demo (lab5.ca pitch); not production ERP
-V2: company-identity — org display name always `LAB5 Distribution`; org CD consistent across company, ledger-company, open-periods
+V1: demo-tenant-seed — artifact is Git-versioned Acumatica seed for rebuildable LAB5 Electronics Inc. manufacturer demo (lab5.ca pitch); not production ERP
+V2: company-identity — org display name always `LAB5 Electronics Inc.`; org CD consistent across company, ledger-company, open-periods
 V3: linked-history — every demo doc chains: customer/vendor → order → shipment/receipt → invoice/bill → payment; orphan demo docs forbidden
 V4: feature-closure — `config/bootstrap/features.yaml` enables every feature config/master/scenario YAML requires
 V5: apply-order — numbered YAML prefixes under `config/` encode alphabetical apply order; record referencing entity sorts after file creating it
-V6: pitch-surface — seed populates distribution pitch path: seed capital, component buy+pay, kit assembly, kit qty, SO, shipment, invoice, customer payment (all closed) on standard screens
+V6: pitch-surface — seed populates manufacturer pitch path: seed capital, component buy+pay, kit assembly, kit qty, SO, shipment, invoice, customer payment (all closed) on standard screens
 V7: deterministic-rebuild — empty/reset tenant + `acu apply config/` + `acu run scenario/` → clean `acu diff config/`
 V8: no-secrets-in-seed — seed YAML + committed docs never contain passwords, API keys, host credentials
 V9: once-capital — seed-capital scenario is once-class; CLI skips when txn already present; Owner Capital not stacked by re-run (closes §B.1)
@@ -45,10 +45,10 @@ V10: seed-layout — apply trees under `config/{bootstrap,baseline,setup,master}
 ## §T TASKS
 
 id|status|task|cites
-T1|x|set company AcctName LAB5 Distribution; align AcctCD + ledger-company + open-periods refs|V2
-T2|x|expand distribution COA (inventory asset, COGS, sales, freight, AP/AR depth as pitch needs)|V6
+T1|x|set company AcctName LAB5 Electronics Inc.; align AcctCD + ledger-company + open-periods refs|V2
+T2|x|expand manufacturer COA (inventory asset, COGS, sales, freight, AP/AR depth as pitch needs)|V6
 T3|x|enable inventory prefs + warehouse + location seed under master/|V4,V5
-T4|x|seed stock items + UOMs (PIECE/each + distribution units) w/ costs|V6
+T4|x|seed stock items + UOMs (PIECE/each + manufacturing units) w/ costs|V6
 T5|x|seed customers + vendors + credit terms used by scenarios|V3
 T6|x|seed PO → receipt path so on-hand qty exists pre-sales demo|V3,V6
 T7|x|seed SO → shipment → invoice → payment chain (linked)|V3,V6

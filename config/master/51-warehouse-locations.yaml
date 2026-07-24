@@ -4,7 +4,7 @@
 # but has no Locations surface. With WarehouseLocation on, PO receipts and
 # kit assembly default to ReceivingLocationID / ShippingLocationID; without
 # a real location every qty sits on system <UNASSIGNED> (2026-07-19 probe).
-# MAIN is the one storage bin for Lab5 - receive, ship, RMA, assembly.
+# MAIN is the one storage bin for LAB5 Electronics Inc. - receive, ship, RMA, assembly.
 #
 # APPLY ORDER: after 53-warehouse.yaml (WH01 must exist); before
 # 54-item-classes.yaml and every document that receives stock into WH01.
