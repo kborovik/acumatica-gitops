@@ -58,7 +58,7 @@ T11|x|seed capital GL batch (Dr 10100 / Cr 30000) in scenario; cash funded for A
 T12|x|PO receipt → AP bill → AP WIRE Check; clear PO accrual + AP|V3,V6
 T13|x|AR WIRE for all three scenario customers; cash + AP/AR expects green|V3,V6
 T14|x|pitch walkthrough + README + V6 reflect full cash cycle (no open-AR beat)|V1,V6
-T15|.|move bootstrap/ baseline/ setup/ master/ under config/|V5,V10
+T15|x|move bootstrap/ baseline/ setup/ master/ under config/|V5,V10
 T16|.|split scenario into 10-seed-capital (once) 20-buy-gateways 30-sell; drop buy-sell.yaml; per-leg expects|V3,V9,V10
 T17|.|README + pitch-walkthrough: acu apply config/; acu run scenario/; once vs additive|V6,V7,V10
 T18|.|open GitHub issue kborovik/acumatica-cli: once-guard skip-if-present + template config/ + split scenario|V9,V10
