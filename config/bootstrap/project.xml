@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Customization level="" description="acu bootstrap (data-repo contract): CustomizationPlugin enables features on publish; Bootstrap endpoint exposes full company surface (company + credit terms + financial currency + GL chain + module preferences + vendor class + statement cycle + warehouse + order type + cash account)" product-version="26.101">
   <EntityEndpoint>
-    <Endpoint xmlns="http://www.acumatica.com/entity/maintenance/5.31" name="Bootstrap" version="1.8.0" systemContractVersion="4">
+    <Endpoint xmlns="http://www.acumatica.com/entity/maintenance/5.31" name="Bootstrap" version="1.9.1" systemContractVersion="4">
       <TopLevelEntity name="Company" screen="CS101500">
         <Fields>
           <Field name="AcctCD" type="StringValue" />
@@ -9,6 +9,8 @@
           <Field name="OrganizationType" type="StringValue" />
           <Field name="BaseCuryID" type="StringValue" />
           <Field name="CountryID" type="StringValue" />
+          <Field name="WeightUOM" type="StringValue" />
+          <Field name="VolumeUOM" type="StringValue" />
         </Fields>
         <Mappings>
           <Mapping field="AcctCD">
@@ -25,6 +27,12 @@
           </Mapping>
           <Mapping field="CountryID">
             <To object="AddressDummy" field="CountryID" />
+          </Mapping>
+          <Mapping field="WeightUOM">
+            <To object="commonsetup" field="WeightUOM" />
+          </Mapping>
+          <Mapping field="VolumeUOM">
+            <To object="commonsetup" field="VolumeUOM" />
           </Mapping>
         </Mappings>
       </TopLevelEntity>
