@@ -1,11 +1,17 @@
-# once-class owner capital (V9). CLI must skip when capital JE already present
-# (skip-if-present once-guard — tracked on kborovik/acumatica-cli; see T18).
-# Do not stack Owner Capital 30000 on warm re-run (closes §B.1).
+# once-class owner capital (V9/gh #19). once+present skips when Owner Capital
+# already funds Checking — warm re-run must not restack 30000 (closes §B.1).
 #
-# Deltas (cold once-run):
+# Deltas (cold once-run only; skip path runs no expects):
 #   capital: Dr 10100 / Cr 30000 = 50000
 scenario: seed-capital
 description: Once-class owner capital JE (fund Checking 10100 for AP WIRE)
+once: true
+present:
+  inquire: AccountSummaryInquiry
+  parameters: {Ledger: ACTUAL, Period: "072026"}
+  match: {Account: '30000'}
+  when:
+    EndingBalance: {gte: 50000}
 steps:
 - id: seed-capital
   put: JournalTransaction
