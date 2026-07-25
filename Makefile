@@ -20,20 +20,20 @@ install: ## Install the acu CLI on PATH (from PyPI)
 tenants: ## List tenants on the instance
 	acu tenant list
 
-apply: ## Apply tenant configuration
-	acu apply
+apply: ## Apply tenant configuration (config/ umbrella)
+	acu apply config/
 
-diff: ## Drift check: live vs. applied configuration
-	acu diff
+diff: ## Drift check: live vs. applied configuration (config/ umbrella)
+	acu diff config/
 
-run: ## Run the transaction scenario
-	acu run scenario/10-seed-capital.yaml
+run: ## Run full lifecycle scenarios (once capital + buy + build + sell)
+	acu run scenario/
 
-check: ## Brand-new deployment: create tenant → apply all YAML → destroy
+check: ## Brand-new deployment: create tenant → apply all YAML → full scenario → destroy
 	trap 'acu tenant delete --id $(CHECK_TENANT_ID) --yes || true' EXIT
 	acu tenant create --id $(CHECK_TENANT_ID) --login $(CHECK_TENANT)
-	acu --tenant $(CHECK_TENANT) apply
-	acu --tenant $(CHECK_TENANT) run scenario/10-seed-capital.yaml
+	acu --tenant $(CHECK_TENANT) apply config/
+	acu --tenant $(CHECK_TENANT) run scenario/
 
 ###############################################################################
 # Colors and Headers

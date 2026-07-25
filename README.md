@@ -17,9 +17,9 @@ Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acum
 | `config/setup/` | Financial year, master calendar, open periods |
 | `config/master/` | Inventory, warehouse, items, vendors, customers, module prefs |
 | `scenario/10-seed-capital.yaml` | Once-class owner capital JE (CLI skip-if-present when present) |
-| `scenario/20-buy.yaml` | Additive component PO → receipt → bill → AP pay (four vendors) |
-| `scenario/30-build.yaml` | Additive kit assembly (parts → GW-EDGE / CELL / RAIL) |
-| `scenario/40-sell.yaml` | Additive SO → ship → invoice → AR pay (three customers) |
+| `scenario/20-buy.yaml` | Additive component PO to receipt to bill to AP pay (four vendors) |
+| `scenario/30-build.yaml` | Additive kit assembly (parts to GW-EDGE / CELL / RAIL) |
+| `scenario/40-sell.yaml` | Additive SO to ship to invoice to AR pay (three customers) |
 | `docs/pitch-walkthrough.md` | Screen path ↔ seed map for the sales video |
 | `SPEC.md` | Spec-driven design (goal, invariants, tasks) |
 | `target.yaml` | Verified ERP / Default API matrix |
@@ -40,7 +40,7 @@ acu config check
 # 2. Publish Bootstrap package (features + custom endpoint)
 acu bootstrap
 
-# 3. Seed configuration (config/ umbrella; order = bootstrap → baseline → setup → master)
+# 3. Seed configuration (config/ umbrella; order = bootstrap then baseline then setup then master)
 acu apply config/
 
 # 4. Linked history for the pitch (once capital, then buy/build/sell)
@@ -63,7 +63,7 @@ acu diff  config/bootstrap/ config/baseline/ config/setup/ config/master/
 |------|-------|-------------|
 | `10-seed-capital.yaml` | **once** | CLI skips when capital JE already present; Owner Capital stays 50k (not stacked) |
 | `20-buy.yaml` | additive | New component PO/receipt/bill/pay each run; part and cash deltas hold |
-| `30-build.yaml` | additive | New kit assemblies each run; parts → kits deltas hold |
+| `30-build.yaml` | additive | New kit assemblies each run; parts to kits deltas hold |
 | `40-sell.yaml` | additive | New SO/ship/invoice/pay pack each run; deltas hold |
 
 Primary compose: `acu apply config/` then `acu run scenario/`.
@@ -74,9 +74,9 @@ See [docs/pitch-walkthrough.md](docs/pitch-walkthrough.md).
 Short version:
 
 1. Company **LAB5 Electronics Inc.**
-2. Bank funded (Owner Capital → Checking 10100)
+2. Bank funded (Owner Capital to Checking 10100)
 3. Components at **WH01** after the buy; four vendor bills paid by WIRE
-4. Kit assembly (parts → finished gateways)
+4. Kit assembly (parts to finished gateways)
 5. Sales order, shipment, invoice, WIRE payment (all three customers paid)
 
 ## Non-goals
