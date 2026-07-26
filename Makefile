@@ -36,29 +36,14 @@ check: ## E2E test
 	acu --tenant $(CHECK_TENANT) run scenario/
 	acu --tenant $(CHECK_TENANT) diff config/
 
-# One command: ensure terminal CLI logs exist, walk every beat, write stills + video + VO.
-# Shoots cold demo tenant DEMO (not ACU_TENANT/LAB5). Override: DEMO_TENANT=LAB5
-# VO needs SPEECHIFY_API_KEY, system ffmpeg (`brew install ffmpeg`), and network.
-# Extra flags: make demo DEMO_ARGS='--headed --yes'   (or --refresh-captures, --beats …)
-# Cold reshoot: make demo-clean && make demo
-# VO only on an existing walk: make demo-vo
-DEMO_ARGS ?=
-DEMO_TENANT ?= DEMO
-DEMO_TENANT_ID ?= 99
-
 demo: ## create demo video + voice-over → demo/out/{cli,shots,video,vo}
 	$(call header,Full demo walk -> demo/out/ (tenant $(DEMO_TENANT)))
-	uv run demo/gui_demo.py --video --hold 6 --ensure-captures --capture-tenant $(DEMO_TENANT) --vo $(DEMO_ARGS)
 
 demo-clean: ## remove demo/out and delete Acumatica DEMO tenant (cold-path reset)
 	$(call header,Clean demo artifacts + tenant $(DEMO_TENANT) id $(DEMO_TENANT_ID))
 	rm -rf demo/out/
 	acu tenant delete --id $(DEMO_TENANT_ID) --yes || true
 	echo "$(green)demo/out removed; tenant id $(DEMO_TENANT_ID) delete requested$(reset)"
-
-demo-vo: ## re-TTS (Speechify) + mux VO onto existing demo/out/video/walk.webm
-	$(call header,Voice-over mux -> demo/out/video/walk-vo.*)
-	uv run demo/vo.py
 
 ###############################################################################
 # Colors and Headers
