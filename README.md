@@ -20,7 +20,7 @@ Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acum
 | `scenario/20-buy.yaml` | Additive component PO to receipt to bill to AP pay (four vendors) |
 | `scenario/30-build.yaml` | Additive kit assembly (parts to GW-EDGE / CELL / RAIL) |
 | `scenario/40-sell.yaml` | Additive SO to ship to invoice to AR pay (three customers) |
-| `docs/pitch-walkthrough.md` | Screen path ↔ seed map for the sales video |
+| `demo/` | Everything for the sales video: shooting script, screen↔seed map, scripted GUI walk |
 | `SPEC.md` | Spec-driven design (goal, invariants, tasks) |
 | `target.yaml` | Verified ERP / Default API matrix |
 | `.env` | Credentials (local only — never commit) |
@@ -70,14 +70,18 @@ Primary compose: `acu apply config/` then `acu run scenario/`.
 
 ## Pitch path
 
-See [docs/pitch-walkthrough.md](docs/pitch-walkthrough.md).
-Short version:
+See [demo/walk.yaml](demo/walk.yaml) — the promo video's script, shot plan and
+narration, and the beat-by-beat source for this path. Short version:
 
 1. Company **LAB5 Electronics Inc.**
 2. Bank funded (Owner Capital to Checking 10100)
 3. Components at **WH01** after the buy; four vendor bills paid by WIRE
 4. Kit assembly (parts to finished gateways)
 5. Sales order, shipment, invoice, WIRE payment (all three customers paid)
+
+The walk itself is scripted — see [demo/](demo/README.md). One command captures the
+full product: `make demo` ensures CLI replay logs, drives every beat, and writes
+stills plus `demo/out/video/walk.webm`. Cold reshoot: `make demo-clean && make demo`.
 
 ## Non-goals
 

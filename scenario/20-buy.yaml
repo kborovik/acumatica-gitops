@@ -1,19 +1,26 @@
 # Additive buy leg: component POs -> receipt (CreateBill) -> AP bill -> AP WIRE pay.
 # Warm re-runnable (document numbers change; per-leg deltas hold).
 #
-# Buys parts for one build pack (30-build): 10 EDGE + 5 CELL + 5 RAIL BOM.
+# Buys parts for one build pack (30-build): 10 EDGE + 5 CELL + 5 RAIL BOM,
+# plus a buffer so components do NOT net to zero. Buying exactly the BOM left
+# every part at 0 on hand, so IN401000 filmed as "No records yet" and the
+# demo/walk.yaml parts-on-hand beat had nothing to show. Buffer is +5 on the
+# high-volume lines and +3 on the x5 lines; a real manufacturer carries stock.
 # Four component vendors (SHENZHEN / ENCLOTEC / WAVELINK / MEMSTOR).
 #
 # Unit costs roll up to kit costs EDGE 139 / CELL 195 / RAIL 145 so sell COGS
-# stays aligned with 40-sell expects.
+# stays aligned with 40-sell expects. Buffer does not move average cost (same
+# unit costs), so 40-sell COGS 1848 / revenue 4138 are unchanged.
 #
 # Deltas:
-#   purchases: 1580 + 470 + 320 + 720 = 3090 cash out
+#   purchases: 2045 + 664 + 428 + 900 = 4037 cash out
 #     receipt CreateBill -> AP bill; ReleaseBill; AP WIRE Check
 #     PO accrual 20200 clears on bill; AP 20100 clears on payment
-#   inventory (WH01): ENCL-STD +15, ENCL-DIN +5, MB-CM4 +20, MOD-LTE +5,
-#     ANT-LORA +20, ANT-LTE +5, PSU-12V +20, SD-32GB +20, CBL-PWR +20
-#   cash 10100: -3090
+#   inventory (WH01): ENCL-STD +20, ENCL-DIN +8, MB-CM4 +25, MOD-LTE +8,
+#     ANT-LORA +25, ANT-LTE +8, PSU-12V +25, SD-32GB +25, CBL-PWR +25
+#   cash 10100: -4037
+#   left on hand after 30-build consumes the BOM: 5 of each +5 line,
+#     3 of each +3 line (947 of component value retained in 12100)
 #
 # AP bill is created by PurchaseReceipt.CreateBill (multi-line Bill PUT
 # 500s on this build); VendorRef = PO-${po} keys the filter get that
@@ -29,8 +36,8 @@ steps:
     VendorID: SHENZHEN
     Hold: false
     Details:
-    - {InventoryID: MB-CM4, OrderQty: 20, UnitCost: 69.00}
-    - {InventoryID: MOD-LTE, OrderQty: 5, UnitCost: 40.00}
+    - {InventoryID: MB-CM4, OrderQty: 25, UnitCost: 69.00}
+    - {InventoryID: MOD-LTE, OrderQty: 8, UnitCost: 40.00}
   capture: {OrderNbr: po_shenzhen}
 - id: rcpt-shenzhen
   put: PurchaseReceipt
@@ -41,8 +48,8 @@ steps:
     CreateBill: true
     VendorRef: "PO-${po_shenzhen}"
     Details:
-    - {POOrderType: Normal, POOrderNbr: "${po_shenzhen}", POLineNbr: 1, ReceiptQty: 20}
-    - {POOrderType: Normal, POOrderNbr: "${po_shenzhen}", POLineNbr: 2, ReceiptQty: 5}
+    - {POOrderType: Normal, POOrderNbr: "${po_shenzhen}", POLineNbr: 1, ReceiptQty: 25}
+    - {POOrderType: Normal, POOrderNbr: "${po_shenzhen}", POLineNbr: 2, ReceiptQty: 8}
   capture: {ReceiptNbr: rcpt_shenzhen}
 - id: release-rcpt-shenzhen
   action: {entity: PurchaseReceipt, name: ReleasePurchaseReceipt}
@@ -71,11 +78,11 @@ steps:
     Vendor: SHENZHEN
     PaymentMethod: WIRE
     CashAccount: '10100'
-    PaymentAmount: 1580.00
+    PaymentAmount: 2045.00
     PaymentRef: "WIRE-AP-${bill_shenzhen}"
     Hold: false
     Details:
-    - {DocType: Bill, ReferenceNbr: "${bill_shenzhen}", AmountPaid: 1580.00}
+    - {DocType: Bill, ReferenceNbr: "${bill_shenzhen}", AmountPaid: 2045.00}
   capture: {ReferenceNbr: chk_shenzhen}
 - id: release-pay-shenzhen
   action: {entity: Check, name: ReleaseCheck}
@@ -91,8 +98,8 @@ steps:
     VendorID: ENCLOTEC
     Hold: false
     Details:
-    - {InventoryID: ENCL-STD, OrderQty: 15, UnitCost: 22.00}
-    - {InventoryID: ENCL-DIN, OrderQty: 5, UnitCost: 28.00}
+    - {InventoryID: ENCL-STD, OrderQty: 20, UnitCost: 22.00}
+    - {InventoryID: ENCL-DIN, OrderQty: 8, UnitCost: 28.00}
   capture: {OrderNbr: po_enclotec}
 - id: rcpt-enclotec
   put: PurchaseReceipt
@@ -103,8 +110,8 @@ steps:
     CreateBill: true
     VendorRef: "PO-${po_enclotec}"
     Details:
-    - {POOrderType: Normal, POOrderNbr: "${po_enclotec}", POLineNbr: 1, ReceiptQty: 15}
-    - {POOrderType: Normal, POOrderNbr: "${po_enclotec}", POLineNbr: 2, ReceiptQty: 5}
+    - {POOrderType: Normal, POOrderNbr: "${po_enclotec}", POLineNbr: 1, ReceiptQty: 20}
+    - {POOrderType: Normal, POOrderNbr: "${po_enclotec}", POLineNbr: 2, ReceiptQty: 8}
   capture: {ReceiptNbr: rcpt_enclotec}
 - id: release-rcpt-enclotec
   action: {entity: PurchaseReceipt, name: ReleasePurchaseReceipt}
@@ -133,11 +140,11 @@ steps:
     Vendor: ENCLOTEC
     PaymentMethod: WIRE
     CashAccount: '10100'
-    PaymentAmount: 470.00
+    PaymentAmount: 664.00
     PaymentRef: "WIRE-AP-${bill_enclotec}"
     Hold: false
     Details:
-    - {DocType: Bill, ReferenceNbr: "${bill_enclotec}", AmountPaid: 470.00}
+    - {DocType: Bill, ReferenceNbr: "${bill_enclotec}", AmountPaid: 664.00}
   capture: {ReferenceNbr: chk_enclotec}
 - id: release-pay-enclotec
   action: {entity: Check, name: ReleaseCheck}
@@ -153,8 +160,8 @@ steps:
     VendorID: WAVELINK
     Hold: false
     Details:
-    - {InventoryID: ANT-LORA, OrderQty: 20, UnitCost: 12.00}
-    - {InventoryID: ANT-LTE, OrderQty: 5, UnitCost: 16.00}
+    - {InventoryID: ANT-LORA, OrderQty: 25, UnitCost: 12.00}
+    - {InventoryID: ANT-LTE, OrderQty: 8, UnitCost: 16.00}
   capture: {OrderNbr: po_wavelink}
 - id: rcpt-wavelink
   put: PurchaseReceipt
@@ -165,8 +172,8 @@ steps:
     CreateBill: true
     VendorRef: "PO-${po_wavelink}"
     Details:
-    - {POOrderType: Normal, POOrderNbr: "${po_wavelink}", POLineNbr: 1, ReceiptQty: 20}
-    - {POOrderType: Normal, POOrderNbr: "${po_wavelink}", POLineNbr: 2, ReceiptQty: 5}
+    - {POOrderType: Normal, POOrderNbr: "${po_wavelink}", POLineNbr: 1, ReceiptQty: 25}
+    - {POOrderType: Normal, POOrderNbr: "${po_wavelink}", POLineNbr: 2, ReceiptQty: 8}
   capture: {ReceiptNbr: rcpt_wavelink}
 - id: release-rcpt-wavelink
   action: {entity: PurchaseReceipt, name: ReleasePurchaseReceipt}
@@ -195,11 +202,11 @@ steps:
     Vendor: WAVELINK
     PaymentMethod: WIRE
     CashAccount: '10100'
-    PaymentAmount: 320.00
+    PaymentAmount: 428.00
     PaymentRef: "WIRE-AP-${bill_wavelink}"
     Hold: false
     Details:
-    - {DocType: Bill, ReferenceNbr: "${bill_wavelink}", AmountPaid: 320.00}
+    - {DocType: Bill, ReferenceNbr: "${bill_wavelink}", AmountPaid: 428.00}
   capture: {ReferenceNbr: chk_wavelink}
 - id: release-pay-wavelink
   action: {entity: Check, name: ReleaseCheck}
@@ -215,9 +222,9 @@ steps:
     VendorID: MEMSTOR
     Hold: false
     Details:
-    - {InventoryID: PSU-12V, OrderQty: 20, UnitCost: 18.00}
-    - {InventoryID: SD-32GB, OrderQty: 20, UnitCost: 10.00}
-    - {InventoryID: CBL-PWR, OrderQty: 20, UnitCost: 8.00}
+    - {InventoryID: PSU-12V, OrderQty: 25, UnitCost: 18.00}
+    - {InventoryID: SD-32GB, OrderQty: 25, UnitCost: 10.00}
+    - {InventoryID: CBL-PWR, OrderQty: 25, UnitCost: 8.00}
   capture: {OrderNbr: po_memstor}
 - id: rcpt-memstor
   put: PurchaseReceipt
@@ -228,9 +235,9 @@ steps:
     CreateBill: true
     VendorRef: "PO-${po_memstor}"
     Details:
-    - {POOrderType: Normal, POOrderNbr: "${po_memstor}", POLineNbr: 1, ReceiptQty: 20}
-    - {POOrderType: Normal, POOrderNbr: "${po_memstor}", POLineNbr: 2, ReceiptQty: 20}
-    - {POOrderType: Normal, POOrderNbr: "${po_memstor}", POLineNbr: 3, ReceiptQty: 20}
+    - {POOrderType: Normal, POOrderNbr: "${po_memstor}", POLineNbr: 1, ReceiptQty: 25}
+    - {POOrderType: Normal, POOrderNbr: "${po_memstor}", POLineNbr: 2, ReceiptQty: 25}
+    - {POOrderType: Normal, POOrderNbr: "${po_memstor}", POLineNbr: 3, ReceiptQty: 25}
   capture: {ReceiptNbr: rcpt_memstor}
 - id: release-rcpt-memstor
   action: {entity: PurchaseReceipt, name: ReleasePurchaseReceipt}
@@ -259,11 +266,11 @@ steps:
     Vendor: MEMSTOR
     PaymentMethod: WIRE
     CashAccount: '10100'
-    PaymentAmount: 720.00
+    PaymentAmount: 900.00
     PaymentRef: "WIRE-AP-${bill_memstor}"
     Hold: false
     Details:
-    - {DocType: Bill, ReferenceNbr: "${bill_memstor}", AmountPaid: 720.00}
+    - {DocType: Bill, ReferenceNbr: "${bill_memstor}", AmountPaid: 900.00}
   capture: {ReferenceNbr: chk_memstor}
 - id: release-pay-memstor
   action: {entity: Check, name: ReleaseCheck}
@@ -315,31 +322,31 @@ expect:
     Status: Closed
 - inquire: InventorySummaryInquiry
   parameters: {InventoryID: ENCL-STD, WarehouseID: WH01}
-  delta: {QtyOnHand: 15.0}
+  delta: {QtyOnHand: 20.0}
 - inquire: InventorySummaryInquiry
   parameters: {InventoryID: ENCL-DIN, WarehouseID: WH01}
-  delta: {QtyOnHand: 5.0}
+  delta: {QtyOnHand: 8.0}
 - inquire: InventorySummaryInquiry
   parameters: {InventoryID: MB-CM4, WarehouseID: WH01}
-  delta: {QtyOnHand: 20.0}
+  delta: {QtyOnHand: 25.0}
 - inquire: InventorySummaryInquiry
   parameters: {InventoryID: MOD-LTE, WarehouseID: WH01}
-  delta: {QtyOnHand: 5.0}
+  delta: {QtyOnHand: 8.0}
 - inquire: InventorySummaryInquiry
   parameters: {InventoryID: ANT-LORA, WarehouseID: WH01}
-  delta: {QtyOnHand: 20.0}
+  delta: {QtyOnHand: 25.0}
 - inquire: InventorySummaryInquiry
   parameters: {InventoryID: ANT-LTE, WarehouseID: WH01}
-  delta: {QtyOnHand: 5.0}
+  delta: {QtyOnHand: 8.0}
 - inquire: InventorySummaryInquiry
   parameters: {InventoryID: PSU-12V, WarehouseID: WH01}
-  delta: {QtyOnHand: 20.0}
+  delta: {QtyOnHand: 25.0}
 - inquire: InventorySummaryInquiry
   parameters: {InventoryID: SD-32GB, WarehouseID: WH01}
-  delta: {QtyOnHand: 20.0}
+  delta: {QtyOnHand: 25.0}
 - inquire: InventorySummaryInquiry
   parameters: {InventoryID: CBL-PWR, WarehouseID: WH01}
-  delta: {QtyOnHand: 20.0}
+  delta: {QtyOnHand: 25.0}
 - inquire: AccountSummaryInquiry
   parameters: {Ledger: ACTUAL, Period: "072026"}
   match: {Account: '20200'}
@@ -351,4 +358,4 @@ expect:
 - inquire: AccountSummaryInquiry
   parameters: {Ledger: ACTUAL, Period: "072026"}
   match: {Account: '10100'}
-  delta: {EndingBalance: -3090.00}
+  delta: {EndingBalance: -4037.00}
