@@ -23,16 +23,8 @@ settings:
   # vo_emotion: direct
 
 cli:
-  # First: create empty walk-target tenant (before-login)
   tenant-create:
-    argv:
-      - "acu"
-      - "tenant"
-      - "create"
-      - "--id"
-      - "${tenant_id}"
-      - "--login"
-      - "${tenant}"
+    argv: ["acu", "tenant", "create", "--id", "${tenant_id}", "--login", "${tenant}"]
     write: true
     when: before-login
     ok_exits: [0]
@@ -43,7 +35,6 @@ cli:
     when: interleaved
     after: [relogin]
     ok_exits: [0]
-  # acu-run examples (transaction scenarios)
   seed:
     argv: ["acu", "run", "scenario/10-seed-capital.yaml"]
     tenant_flag: true
