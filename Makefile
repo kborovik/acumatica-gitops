@@ -36,15 +36,6 @@ check: ## E2E test
 	acu --tenant $(CHECK_TENANT) run scenario/
 	acu --tenant $(CHECK_TENANT) diff config/
 
-demo: ## create demo video + voice-over → demo/out/{cli,shots,video,vo}
-	$(call header,Full demo walk -> demo/out/ (tenant $(DEMO_TENANT)))
-
-demo-clean: ## remove demo/out and delete Acumatica DEMO tenant (cold-path reset)
-	$(call header,Clean demo artifacts + tenant $(DEMO_TENANT) id $(DEMO_TENANT_ID))
-	rm -rf demo/out/
-	acu tenant delete --id $(DEMO_TENANT_ID) --yes || true
-	echo "$(green)demo/out removed; tenant id $(DEMO_TENANT_ID) delete requested$(reset)"
-
 ###############################################################################
 # Colors and Headers
 ###############################################################################

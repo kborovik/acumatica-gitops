@@ -1,0 +1,6 @@
+# Shoot output (when settings.out is under demo/)
+out/
+
+# Local overrides / scratch
+*.local.yaml
+.DS_Store

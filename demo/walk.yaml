@@ -1,0 +1,400 @@
+# acu-walk script — shoot settings + CLI recipes + beats.
+# Credentials from workspace .env (same as `acu`):
+#   ACU_BASE_URL, ACU_USER, ACU_PASSWORD  (required for live ops)
+# Optional acu-channel only: ACU_TENANT / ACU_TENANT_ID (not walk-target sources)
+# Walk target: settings.tenant_name / tenant_id (defaults DEMO / 99)
+# Resolve: --tenant-name/--tenant-id > settings > DEMO/99
+# Interp: ${tenant} ${tenant_id} ${root} ${env:NAME}
+
+version: 1
+settings:
+  out: demo/out
+  hold: 6
+  video: true
+  vo: true
+  ensure_captures: true
+  # tenant_name: DEMO   # login label; default DEMO if unset
+  # tenant_id: "99"     # company id; default 99 if unset
+  # headed: false
+  # width: 1600
+  # height: 900
+  # refresh_captures: false
+  # vo_provider: speechify
+  # vo_emotion: direct
+
+cli:
+  # First: create empty walk-target tenant (before-login)
+  tenant-create:
+    argv:
+      - "acu"
+      - "tenant"
+      - "create"
+      - "--id"
+      - "${tenant_id}"
+      - "--login"
+      - "${tenant}"
+    write: true
+    when: before-login
+    ok_exits: [0]
+  acu-apply:
+    argv: ["acu", "apply", "config/"]
+    tenant_flag: true
+    write: true
+    when: interleaved
+    after: [relogin]
+    ok_exits: [0]
+  # acu-run examples (transaction scenarios)
+  seed:
+    argv: ["acu", "run", "scenario/10-seed-capital.yaml"]
+    tenant_flag: true
+    write: true
+    when: interleaved
+  buy:
+    argv: ["acu", "run", "scenario/20-buy.yaml"]
+    tenant_flag: true
+    write: true
+    when: interleaved
+  build:
+    argv: ["acu", "run", "scenario/30-build.yaml"]
+    tenant_flag: true
+    write: true
+    when: interleaved
+  sell:
+    argv: ["acu", "run", "scenario/40-sell.yaml"]
+    tenant_flag: true
+    write: true
+    when: interleaved
+  acu-diff:
+    argv: ["acu", "diff", "config/"]
+    tenant_flag: true
+    write: false
+    when: interleaved
+    ok_exits: [0, 2]
+
+beats:
+  # ===========================================================================
+  # ACT 1 — THE WAY IT'S DONE NOW
+  # ===========================================================================
+
+  # Camera: the sign-in page, clean — no terminal pane, nothing highlighted.
+  # `screen: login` is a pseudo-screen (gui_demo.py is_login_target): Login.aspx
+  # renders outside the main iframe, so no filter/highlight is possible here and
+  # the still is deliberately plain. The tenant picker already lists DEMO —
+  # tenant-create ran before the walk — so the demo tenant we are talking about
+  # is literally on screen while the problem is stated.
+  #
+  # This beat states the friction; the next one answers it. Do not let the two
+  # blur together — 00 is the audience's own Monday, 01 is the alternative.
+  #
+  # KEEP THIS SHORT. Nothing moves in this frame — no pane typing, no grid
+  # painting — so every spoken second is a second of still login page. 29 words
+  # is ~12s at the 2.4 w/s budget and already at the limit; the first draft ran
+  # 41 words (~17s), which is far too long to hold a motionless frame. It stays
+  # this length until the COLD OPEN montage exists to carry the problem visually
+  # (see "NOT shot yet"), and then it should get shorter still.
+  #
+  # Scope: friction #1 only — not reviewable, not reproducible. The wizard and
+  # the ~200 clicks belong to beat 02, "another afternoon" to beat 16. Three
+  # wizard mentions in one script is a drinking game.
+  - id: "00-var-problem"
+    screen: login
+    vo: >
+      Every Acumatica partner keeps a demo tenant. Somebody built it by hand
+      months ago, and nobody remembers how. It can't be reviewed, reproduced,
+      or rebuilt for the next prospect.
+
+  # Camera: tenant-create log over the same sign-in page. The log collapses to
+  # ~9 visible lines, so the pane fills instantly and the VO plays over a
+  # near-static frame — keep this line short.
+  #
+  # The point of this beat is the TARGET, not the command: an empty tenant is
+  # the thing the repo gets applied into. Do not describe what apply does here;
+  # beat 03 owns that.
+  - id: "01-cli-tenant-create"
+    cli: tenant-create
+    backdrop: login
+    speed: 40
+    max_lines: 200
+    vo: >
+      Start clean instead. One command creates the tenant, and it is genuinely
+      empty — nothing configured, nothing clicked. This is the target the repo
+      gets applied into.
+
+  # Camera: Companies list, genuinely zero rows. ready:false — a virgin tenant
+  # has no grid rows, so do not wait 30s for data that will never arrive.
+  - id: "02-empty-tenant"
+    screen: CS1015PL
+    ready: false
+    vo: >
+      Zero companies. No ledger, no items, no customers. By hand this is two
+      hundred clicks through the wizard, and no two people do it the same.
+
+  # ===========================================================================
+  # ACT 2 — BUILT
+  # ===========================================================================
+
+  # Camera: the apply scroll. Do not speed-ramp it — the volume IS the point.
+  # Order named here must match the real tree: features+company are bootstrap/,
+  # accounts+ledger are baseline/, calendar is setup/, the rest is master/.
+  # (apply does NOT publish the endpoint — `acu tenant create` already did.)
+  - id: "03-cli-apply"
+    cli: acu-apply
+    backdrop: CS1015PL
+    speed: 55
+    max_lines: 400
+    vo: >
+      One command instead. Apply reads the repo and builds from the ground up —
+      company, chart of accounts, ledger, calendar, warehouse, parts, kits,
+      vendors, customers. Dependency order. Every write is an upsert, so
+      running it twice changes nothing.
+
+  # Driver: config/bootstrap/company.yaml
+  #
+  # NO WALL-CLOCK CLAIM HERE. This used to say "Empty 2 minutes ago" / "two
+  # minutes later", which nothing measured — apply is well under a minute on a
+  # warm instance and varies with the target anyway. The real elapsed time is
+  # already on screen: the terminal pane prints the capture's exit line
+  # (`exit 0`, seconds) from apply.json when the previous beat ends. If a spoken
+  # number is ever wanted, take it from there and re-check on a cold rebuild;
+  # do not improvise one.
+  - id: "04-company"
+    screen: CS1015PL
+    highlight: ["LAB5 Electronics Inc."]
+    label: "Empty one command ago"
+    vo: >
+      There's the company. Same screen, one command later. Nobody opened a
+      wizard — it came out of a file somebody could review in a pull request.
+
+  # ===========================================================================
+  # ACT 3 — FUNDED
+  # The hinge from configuration to transactions. Sets up the §2 argument that
+  # the next three acts spend: the history is the expensive part.
+  # ===========================================================================
+
+  # Driver: scenario/10-seed-capital.yaml (once-class; skipped on warm re-run)
+  - id: "05-cli-seed"
+    cli: seed
+    backdrop: GL401000            # no CompanyID — that param switches TENANT
+    speed: 40
+    max_lines: 200
+    vo: >
+      Configuration is state. Transactions are the expensive part — they move
+      forward, and each one depends on the last. Start with a single journal
+      entry: fifty thousand dollars of owner capital into checking.
+
+  # Money shot right after seed ONLY — Owner Capital before buy/build/sell.
+  - id: "06-cash-funded"
+    screen: GL401000
+    highlight: ["Owner Capital"]
+    row: true
+    label: "Owner Capital"
+    vo: >
+      Fifty thousand in owner capital, the same in checking. No purchases,
+      no sales, no inventory. Day one.
+
+  # ===========================================================================
+  # ACT 4 — BUY   (leg 1 of 3: run one scenario, then show what it changed)
+  # ===========================================================================
+
+  # Driver: scenario/20-buy.yaml. 16 documents across 4 vendor chains.
+  # Backdrop is the bills list as it stands BEFORE the leg runs — empty. Every
+  # `backdrop:` loads ahead of its command now (a wallpaper showing the result
+  # gives the ending away), so it needs no `ready:` and will not wait for rows.
+  - id: "07-cli-buy"
+    cli: buy
+    backdrop: AP3010PL
+    speed: 40
+    max_lines: 400
+    vo: >
+      First leg: buy. Four suppliers, sixteen documents — purchase order,
+      receipt, bill, payment on every chain. By hand that is an afternoon of
+      copying reference numbers between screens, and one wrong number breaks
+      the chain silently.
+
+  # Camera: MB-CM4 ("Gateway mainboard") with stock left after the build.
+  # This beat only films because 20-buy.yaml now buys ABOVE the BOM: 25 in,
+  # 20 consumed by 30-build, 5 on the shelf. Buying exactly the BOM netted
+  # every part to zero and this frame read "No records yet".
+  - id: "08-parts-on-hand"
+    screen: IN401000
+    params: { InventoryID: MB-CM4 }
+    highlight: ["WH01"]
+    row: true
+    label: "MB-CM4 @ MAIN"
+    vo: >
+      Components landed at the main warehouse. Bought, received, and the bill
+      paid — a real receipt, not an opening balance somebody typed in.
+
+  # Camera: 4 bills, 4 of 4 rows — so box ONE status cell, not every row.
+  - id: "09-bills-closed"
+    screen: AP3010PL
+    highlight: ["Closed"]
+    label: "scenario/20-buy.yaml"
+    vo: >
+      Four suppliers, four bills, every one closed. This is where hand-built
+      demos fall over — somebody keys an invoice, forgets the payment, and the
+      prospect finds it.
+
+  # 000001 exists on a cold tenant and on a warm one; a higher number would miss
+  # after a fresh rebuild. Highlights match substrings, so they survive either.
+  # PO-0000… is the VendorRef the scenario wrote: the real PO↔bill link.
+  #
+  # The linked chain (V3) this beat is evidence for — no orphan demo documents,
+  # every one references a number captured from the step before:
+  #   seed capital (GL, once) → Checking 10100
+  #   vendor → PO → receipt → bill → AP WIRE payment
+  #   kit assembly (parts → GW-EDGE / CELL / RAIL) at WH01 MAIN
+  #   customer → SO → shipment → invoice → AR WIRE payment
+  # via ${po_*} ${rcpt_*} ${bill_*} ${chk_*} ${asm_*} ${ship_*} ${inv_*}
+  - id: "10-bill-detail"
+    screen: AP301000
+    params: { DocType: INV, RefNbr: "000001" }
+    highlight: ["PO-0000", "Closed"]
+    label: "V3 linked history"
+    vo: >
+      Open one. Not an orphan invoice — it points back at the purchase order
+      and the receipt that created it. Every number captured at runtime and
+      threaded into the next document.
+
+  - id: "11-checks-out"
+    screen: AP3020PL
+    highlight: ["MEMSTOR"]
+    label: "20-buy.yaml pay steps"
+    vo: >
+      And there goes the money. Wire payments out of the same checking account
+      the capital funded.
+
+  # ===========================================================================
+  # ACT 5 — BUILD   (leg 2 of 3)
+  # ===========================================================================
+
+  # Driver: scenario/30-build.yaml; specs config/master/85-kit-specifications.yaml
+  - id: "12-cli-build"
+    cli: build
+    backdrop: IN3070PL
+    speed: 40
+    max_lines: 400
+    vo: >
+      Second leg: build. Three kit assemblies turn nine kinds of component into
+      finished gateways. Inventory moves, work in progress clears, and the
+      ledger follows on its own.
+
+  - id: "13-kits-assembled"
+    screen: IN3070PL
+    highlight: ["GW-RAIL"]
+    row: true
+    label: "scenario/30-build.yaml"
+    vo: >
+      Ten edge gateways, five cellular, five DIN-rail — released. Real
+      inventory transactions, not a quantity someone adjusted to make the
+      demo look right.
+
+  # Camera: GW-EDGE on hand at WH01/MAIN. 10 built minus 7 sold = 3.
+  - id: "14-kits-on-hand"
+    screen: IN401000
+    params: { InventoryID: GW-EDGE }
+    highlight: ["WH01"]
+    row: true
+    label: "GW-EDGE @ MAIN"
+    vo: >
+      Finished gateways on the shelf at the main warehouse. Built from the
+      parts that came in, ready to ship.
+
+  # ===========================================================================
+  # ACT 6 — SELL   (leg 3 of 3; lands the 32-document total and "it checks")
+  # ===========================================================================
+
+  # Driver: scenario/40-sell.yaml. 12 documents — note shipments and invoices
+  # come from ACTIONS (SalesOrderCreateShipment / PrepareInvoice), not puts.
+  - id: "15-cli-sell"
+    cli: sell
+    backdrop: SO3010PL
+    speed: 40
+    max_lines: 400
+    vo: >
+      Third leg: sell. Twelve more documents — order, shipment, invoice,
+      payment, for each of three customers. Thirty-two linked documents in one
+      cycle. And every leg checks its own inventory and ledger movement against
+      a snapshot taken before the run. It doesn't just execute. It checks.
+
+  # Camera: 3 orders, 3 of 3 rows — box the TOP row only (AgriSense, 000003),
+  # which also parks the badge on the column headers rather than on data.
+  # Customers: config/master/76-customers.yaml
+  - id: "16-sales-orders"
+    screen: SO3010PL
+    highlight: ["AGRISENSE"]
+    row: true
+    label: "scenario/40-sell.yaml"
+    vo: >
+      Three customers — AgriSense Farms, NorthGrid Utilities, Acme
+      Manufacturing. Need a fourth for a different prospect? That's a file,
+      not another afternoon in the wizard.
+
+  - id: "17-shipments"
+    screen: SO3020PL
+    highlight: ["AGRISENSE"]
+    row: true
+    label: "ConfirmShipment"
+    vo: >
+      Shipped and confirmed out of the warehouse. Stock is off the shelf.
+
+  # By the time this films the leg is complete: invoices are Closed and AR
+  # (11000) is back to zero. Do not invite the viewer to look for an open AR.
+  - id: "18-invoices"
+    screen: SO3030PL
+    highlight: ["AGRISENSE"]
+    row: true
+    label: "ReleaseSalesInvoice"
+    vo: >
+      Invoiced and released. Revenue on the books — and already collected by
+      the time the leg finished.
+
+  - id: "19-ar-payments"
+    screen: AR3020PL
+    highlight: ["AGRISENSE"]
+    row: true
+    label: "AR WIRE"
+    vo: >
+      And back the money comes. All three customers paid in full, by wire,
+      into the same checking account. Nothing outstanding.
+
+  # ===========================================================================
+  # ACT 7 — EVIDENCE
+  # ===========================================================================
+
+  # THE LANDING. Numbers are canonical (see the block up top) and cold-run only.
+  - id: "20-cash-position"
+    screen: GL401000
+    highlight: ["Checking Account"]
+    row: true
+    label: "cash position"
+    vo: >
+      Full circuit. Fifty thousand in. Four thousand thirty-seven out to
+      suppliers. Four thousand one hundred thirty-eight back from customers.
+      Checking lands at fifty thousand one hundred and one. Whatever screen
+      the prospect asks for, there's a document behind it.
+
+  # ===========================================================================
+  # ACT 8 — PROOF
+  # The one thing a snapshot cannot do (friction #3.2). Closes the three verbs.
+  # ===========================================================================
+
+  - id: "21-cli-diff"
+    cli: acu-diff
+    backdrop: GL202500
+    speed: 55
+    max_lines: 400
+    vo: >
+      Last command. Diff compares the live tenant back to the repo. Clean —
+      no drift. A snapshot can't do that. Restore one and you get last
+      quarter's tenant, and nothing tells you what changed since. Apply builds
+      it. Run works it. Diff proves it.
+
+# Drift beat — only touched by --drift. See "NOT shot yet" above: the default
+# walk shows a CLEAN diff at beat 21, so nothing in `beats:` may narrate a
+# caught-drift moment. Restored afterwards by `acu apply config/` (V7).
+drift:
+  screen: GL202500
+  key: "10100"
+  column: "Checking Account"
+  value: "Ops checking (edited by hand)"
