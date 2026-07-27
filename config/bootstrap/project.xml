@@ -1,7 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Customization level="" description="acu bootstrap (data-repo contract): CustomizationPlugin enables features on publish; Bootstrap endpoint exposes full company surface (company + credit terms + financial currency + GL chain + module preferences + vendor class + statement cycle + warehouse + order type + cash account)" product-version="26.101">
+<!--
+  acu bootstrap customization package template - full company contract
+  (SPEC T81: single Bootstrap/1.0.0 line both flavors).
+
+  package_zip() (bootstrap.py) prefers data-repo bootstrap/project.xml when
+  present; otherwise this packaged template is the fallback so config init,
+  offline tests, and PyPI-only installs still bootstrap the full surface.
+
+  package_zip() injects a
+  <Graph ClassName="AcuBootstrapPlugin" FileType="NewFile" Source="..."/>
+  item carrying bootstrap_plugin.cs - the CustomizationPlugin that enables
+  features on publish (CS100000 is un-writable through the contract API;
+  T3 verdict). Item shape verified vs 26.101.0225: Customization.CstCodeFile
+  Tag=Graph, source rides in the Source ATTRIBUTE (XML-escaped), not CDATA.
+
+  Root element shape verified vs the training packages shipped on the live
+  box (HelpAndTraining/T*/PhoneRepairShop.zip, same 26.101.0225 build):
+  project.xml's root is <Customization level description product-version>;
+  the project NAME comes from the import call, not the XML.
+
+  The <EntityEndpoint> item (T12, verified vs 26.101.0225 by import
+  round-trip 2026-07-08): the <Endpoint> child is the XmlSerializer form of
+  PX.Api.ContractBased.Common.Model.Endpoint - namespace
+  http://www.acumatica.com/entity/maintenance/5.31, systemContractVersion 4.
+
+  Full company entity payload (finance + distribution setup surface):
+  Company, CreditTerms, Currency, LedgerCompany, FinancialYearSettings,
+  MasterCalendar, CompanyCalendar, CompanyPeriod, ManagePeriods,
+  GLPreferences, INPreferences, ReasonCode, AP/AR/SO/PO/CA Preferences,
+  AvailabilityCalculationRule, PostingClass, VendorClass, StatementCycle,
+  Warehouse, OrderType, CashAccount.
+
+  Contract field names = DAC property names verbatim (no rename layer).
+  Features (CS100000) stays OUT of the endpoint - the plugin owns features.
+  Shape change requires a version bump (V21).
+-->
+<Customization level="" description="acu bootstrap: CustomizationPlugin enables features on publish; Bootstrap endpoint exposes full company surface (company + credit terms + financial currency + GL chain + module preferences + vendor class + statement cycle + warehouse + order type + cash account)" product-version="26.101">
   <EntityEndpoint>
-    <Endpoint xmlns="http://www.acumatica.com/entity/maintenance/5.31" name="Bootstrap" version="1.9.1" systemContractVersion="4">
+    <Endpoint xmlns="http://www.acumatica.com/entity/maintenance/5.31" name="Bootstrap" version="1.0.0" systemContractVersion="4">
       <TopLevelEntity name="Company" screen="CS101500">
         <Fields>
           <Field name="AcctCD" type="StringValue" />
@@ -9,8 +45,6 @@
           <Field name="OrganizationType" type="StringValue" />
           <Field name="BaseCuryID" type="StringValue" />
           <Field name="CountryID" type="StringValue" />
-          <Field name="WeightUOM" type="StringValue" />
-          <Field name="VolumeUOM" type="StringValue" />
         </Fields>
         <Mappings>
           <Mapping field="AcctCD">
@@ -27,12 +61,6 @@
           </Mapping>
           <Mapping field="CountryID">
             <To object="AddressDummy" field="CountryID" />
-          </Mapping>
-          <Mapping field="WeightUOM">
-            <To object="commonsetup" field="WeightUOM" />
-          </Mapping>
-          <Mapping field="VolumeUOM">
-            <To object="commonsetup" field="VolumeUOM" />
           </Mapping>
         </Mappings>
       </TopLevelEntity>
