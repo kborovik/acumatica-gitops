@@ -2,8 +2,11 @@
 # preferences exist (60-ar-preferences.yaml; P1 probe 500'd before it).
 # Seven B2B buyers of the gateway kits. Terms/AR accounts and the cash
 # discount default from customer class B2B (71-customer-classes.yaml) -
-# records stay minimal so class changes propagate. The nested
-# MainContact/Address/Country mirrors the vendor finding (T65).
+# class-driven GL stays on the class so class changes propagate.
+# MainContact/Address (Country required at insert - T65) carries full
+# street/city/state/postal + company Email/Phone1. PrimaryContact is
+# the named buyer contact (First/Last/Email/Phone/JobTitle) so AR303000
+# Contacts tab is non-empty for the pitch.
 #
 # APPLY ORDER (dir expansion sorts *.yaml alphabetically; numbered
 # prefixes encode order): after 71-customer-classes.yaml.
@@ -14,41 +17,133 @@ records:
   CustomerName: Acme Manufacturing
   CustomerClass: B2B
   MainContact:
+    Email: ap@acmemfg.example
+    Phone1: "+1 (312) 555-0201"
+    Attention: Accounts Payable
     Address:
+      AddressLine1: 500 Industrial Parkway
+      City: Chicago
+      State: IL
+      PostalCode: "60601"
       Country: US
+  PrimaryContact:
+    FirstName: Jordan
+    LastName: Blake
+    Email: jordan.blake@acmemfg.example
+    Phone1: "+1 (312) 555-0202"
+    JobTitle: Purchasing Manager
 - CustomerID: NORTHGRID
   CustomerName: NorthGrid Utilities
   CustomerClass: B2B
   MainContact:
+    Email: procurement@northgrid.example
+    Phone1: "+1 (612) 555-0301"
+    Attention: Procurement
     Address:
+      AddressLine1: 100 Powerline Road
+      City: Minneapolis
+      State: MN
+      PostalCode: "55401"
       Country: US
+  PrimaryContact:
+    FirstName: Avery
+    LastName: Chen
+    Email: avery.chen@northgrid.example
+    Phone1: "+1 (612) 555-0302"
+    JobTitle: Grid Operations Buyer
 - CustomerID: AGRISENSE
   CustomerName: AgriSense Farms
   CustomerClass: B2B
   MainContact:
+    Email: orders@agrisense.example
+    Phone1: "+1 (515) 555-0401"
+    Attention: Farm Ops
     Address:
+      AddressLine1: 8800 Heartland Highway
+      City: Des Moines
+      State: IA
+      PostalCode: "50309"
       Country: US
+  PrimaryContact:
+    FirstName: Morgan
+    LastName: Ruiz
+    Email: morgan.ruiz@agrisense.example
+    Phone1: "+1 (515) 555-0402"
+    JobTitle: Operations Lead
 - CustomerID: COLDCHAIN
   CustomerName: ColdChain Logistics
   CustomerClass: B2B
   MainContact:
+    Email: fleet@coldchain.example
+    Phone1: "+1 (404) 555-0501"
+    Attention: Fleet Procurement
     Address:
+      AddressLine1: 2200 Reefer Boulevard
+      City: Atlanta
+      State: GA
+      PostalCode: "30318"
       Country: US
+  PrimaryContact:
+    FirstName: Sam
+    LastName: Okonkwo
+    Email: sam.okonkwo@coldchain.example
+    Phone1: "+1 (404) 555-0502"
+    JobTitle: Fleet Manager
 - CustomerID: SMARTBLD
   CustomerName: SmartBuild Properties
   CustomerClass: B2B
   MainContact:
+    Email: facilities@smartbld.example
+    Phone1: "+1 (720) 555-0601"
+    Attention: Facilities
     Address:
+      AddressLine1: 1400 Skyline Avenue
+      AddressLine2: Suite 800
+      City: Denver
+      State: CO
+      PostalCode: "80202"
       Country: US
+  PrimaryContact:
+    FirstName: Riley
+    LastName: Patel
+    Email: riley.patel@smartbld.example
+    Phone1: "+1 (720) 555-0602"
+    JobTitle: Facilities Director
 - CustomerID: AQUAFLOW
   CustomerName: AquaFlow Water Systems
   CustomerClass: B2B
   MainContact:
+    Email: purchasing@aquaflow.example
+    Phone1: "+1 (602) 555-0701"
+    Attention: Purchasing
     Address:
+      AddressLine1: 55 Canal Street
+      City: Phoenix
+      State: AZ
+      PostalCode: "85004"
       Country: US
+  PrimaryContact:
+    FirstName: Casey
+    LastName: Nguyen
+    Email: casey.nguyen@aquaflow.example
+    Phone1: "+1 (602) 555-0702"
+    JobTitle: Purchasing Agent
 - CustomerID: BAYINT
   CustomerName: Bay Integrators
   CustomerClass: B2B
   MainContact:
+    Email: projects@bayint.example
+    Phone1: "+1 (510) 555-0801"
+    Attention: Project Desk
     Address:
+      AddressLine1: 333 Embarcadero West
+      City: Oakland
+      State: CA
+      PostalCode: "94607"
       Country: US
+  PrimaryContact:
+    FirstName: Quinn
+    LastName: Alvarez
+    Email: quinn.alvarez@bayint.example
+    Phone1: "+1 (510) 555-0802"
+    JobTitle: Integration Lead
