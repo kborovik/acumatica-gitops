@@ -1,118 +1,120 @@
-# Vendors (AP303000) via the Default endpoint - reachable once AP
-# preferences exist (61-ap-preferences.yaml; P1 probe 500'd before it).
-# Four component suppliers + two service vendors (AP variety for later
-# scenario legs; buy-build-sell v1 bills only component vendors). Terms
-# ride each vendor: the Default VendorClass contract is skeletal
-# (ClassID/Description only - P1 schema read), so terms stay per vendor
-# while GL accounts default from the Bootstrap VendorClass (T64). The
-# nested MainContact/Address is required at insert - Country 422s empty
-# (T65); full street/city/state/postal + Email/Phone1/Attention make
-# the AP vendor screens look real for the pitch. PrintOrders/
-# SendOrdersbyEmail false: either flag parks a PO at 'Pending Printing'
-# where receipts cannot add it (P5 probe).
-#
-# APPLY ORDER (dir expansion sorts *.yaml alphabetically; numbered
-# prefixes encode order): after 70-vendor-classes.yaml and bootstrap
-# credit terms (NET30).
 entity: Vendor
 key: VendorID
 records:
-- VendorID: SHENZHEN
-  VendorName: Shenzhen Circuit Supply
-  VendorClass: SUPPLIER
-  Terms: NET30
-  PrintOrders: false
-  SendOrdersbyEmail: false
-  MainContact:
-    Email: orders@shenzhen-circuit.example
-    Phone1: "+1 (408) 555-0101"
-    Attention: Purchasing Desk
-    Address:
-      AddressLine1: 1288 Semiconductor Blvd
-      AddressLine2: Suite 400
-      City: San Jose
-      State: CA
-      PostalCode: "95134"
-      Country: US
-- VendorID: ENCLOTEC
-  VendorName: EncloTech Industries
-  VendorClass: SUPPLIER
-  Terms: NET30
-  PrintOrders: false
-  SendOrdersbyEmail: false
-  MainContact:
-    Email: sales@enclotech.example
-    Phone1: "+1 (512) 555-0142"
-    Attention: Sales Desk
-    Address:
-      AddressLine1: 900 Metalworks Drive
-      City: Austin
-      State: TX
-      PostalCode: "78745"
-      Country: US
-- VendorID: WAVELINK
-  VendorName: WaveLink Antennas
-  VendorClass: SUPPLIER
-  Terms: NET30
-  PrintOrders: false
-  SendOrdersbyEmail: false
-  MainContact:
-    Email: rf@wavelink.example
-    Phone1: "+1 (303) 555-0188"
-    Attention: RF Orders
-    Address:
-      AddressLine1: 45 Flatiron Tech Park
-      AddressLine2: Building C
-      City: Boulder
-      State: CO
-      PostalCode: "80301"
-      Country: US
-- VendorID: MEMSTOR
-  VendorName: MemStore Distribution
-  VendorClass: SUPPLIER
-  Terms: NET30
-  PrintOrders: false
-  SendOrdersbyEmail: false
-  MainContact:
-    Email: wholesale@memstor.example
-    Phone1: "+1 (503) 555-0166"
-    Attention: Wholesale Desk
-    Address:
-      AddressLine1: 2100 Memory Lane
-      City: Portland
-      State: OR
-      PostalCode: "97209"
-      Country: US
-- VendorID: FREIGHT
-  VendorName: FastFreight Logistics
-  VendorClass: SERVICE
-  Terms: NET30
-  PrintOrders: false
-  SendOrdersbyEmail: false
-  MainContact:
-    Email: dispatch@fastfreight.example
-    Phone1: "+1 (901) 555-0190"
-    Attention: Dispatch
-    Address:
-      AddressLine1: 700 Cargo Way
-      City: Memphis
-      State: TN
-      PostalCode: "38118"
-      Country: US
 - VendorID: CLOUDNET
-  VendorName: CloudNet Services
-  VendorClass: SERVICE
-  Terms: NET30
-  PrintOrders: false
-  SendOrdersbyEmail: false
   MainContact:
-    Email: billing@cloudnet.example
-    Phone1: "+1 (206) 555-0175"
-    Attention: Billing
     Address:
       AddressLine1: 1600 Cloud Avenue
       AddressLine2: Floor 12
       City: Seattle
-      State: WA
-      PostalCode: "98101"
       Country: US
+      PostalCode: '98101'
+      State: WA
+    Attention: Billing
+    DisplayName: CloudNet Services
+    Email: billing@cloudnet.example
+    Phone1: +1 (206) 555-0175
+    Phone1Type: Business 1
+    Phone2Type: Business 2
+  PrintOrders: false
+  SendOrdersbyEmail: false
+  Terms: NET30
+  VendorClass: SERVICE
+  VendorName: CloudNet Services
+- VendorID: ENCLOTEC
+  MainContact:
+    Address:
+      AddressLine1: 900 Metalworks Drive
+      City: Austin
+      Country: US
+      PostalCode: '78745'
+      State: TX
+    Attention: Sales Desk
+    DisplayName: EncloTech Industries
+    Email: sales@enclotech.example
+    Phone1: +1 (512) 555-0142
+    Phone1Type: Business 1
+    Phone2Type: Business 2
+  PrintOrders: false
+  SendOrdersbyEmail: false
+  Terms: NET30
+  VendorClass: SUPPLIER
+  VendorName: EncloTech Industries
+- VendorID: FREIGHT
+  MainContact:
+    Address:
+      AddressLine1: 700 Cargo Way
+      City: Memphis
+      Country: US
+      PostalCode: '38118'
+      State: TN
+    Attention: Dispatch
+    DisplayName: FastFreight Logistics
+    Email: dispatch@fastfreight.example
+    Phone1: +1 (901) 555-0190
+    Phone1Type: Business 1
+    Phone2Type: Business 2
+  PrintOrders: false
+  SendOrdersbyEmail: false
+  Terms: NET30
+  VendorClass: SERVICE
+  VendorName: FastFreight Logistics
+- VendorID: MEMSTOR
+  MainContact:
+    Address:
+      AddressLine1: 2100 Memory Lane
+      City: Portland
+      Country: US
+      PostalCode: '97209'
+      State: OR
+    Attention: Wholesale Desk
+    DisplayName: MemStore Distribution
+    Email: wholesale@memstor.example
+    Phone1: +1 (503) 555-0166
+    Phone1Type: Business 1
+    Phone2Type: Business 2
+  PrintOrders: false
+  SendOrdersbyEmail: false
+  Terms: NET30
+  VendorClass: SUPPLIER
+  VendorName: MemStore Distribution
+- VendorID: SHENZHEN
+  MainContact:
+    Address:
+      AddressLine1: 1288 Semiconductor Blvd
+      AddressLine2: Suite 400
+      City: San Jose
+      Country: US
+      PostalCode: '95134'
+      State: CA
+    Attention: Purchasing Desk
+    DisplayName: Shenzhen Circuit Supply
+    Email: orders@shenzhen-circuit.example
+    Phone1: +1 (408) 555-0101
+    Phone1Type: Business 1
+    Phone2Type: Business 2
+  PrintOrders: false
+  SendOrdersbyEmail: false
+  Terms: NET30
+  VendorClass: SUPPLIER
+  VendorName: Shenzhen Circuit Supply
+- VendorID: WAVELINK
+  MainContact:
+    Address:
+      AddressLine1: 45 Flatiron Tech Park
+      AddressLine2: Building C
+      City: Boulder
+      Country: US
+      PostalCode: '80301'
+      State: CO
+    Attention: RF Orders
+    DisplayName: WaveLink Antennas
+    Email: rf@wavelink.example
+    Phone1: +1 (303) 555-0188
+    Phone1Type: Business 1
+    Phone2Type: Business 2
+  PrintOrders: false
+  SendOrdersbyEmail: false
+  Terms: NET30
+  VendorClass: SUPPLIER
+  VendorName: WaveLink Antennas

@@ -1,149 +1,130 @@
-# Customers (AR303000) via the Default endpoint - reachable once AR
-# preferences exist (60-ar-preferences.yaml; P1 probe 500'd before it).
-# Seven B2B buyers of the gateway kits. Terms/AR accounts and the cash
-# discount default from customer class B2B (71-customer-classes.yaml) -
-# class-driven GL stays on the class so class changes propagate.
-# MainContact/Address (Country required at insert - T65) carries full
-# street/city/state/postal + company Email/Phone1. PrimaryContact is
-# the named buyer contact (First/Last/Email/Phone/JobTitle) so AR303000
-# Contacts tab is non-empty for the pitch.
-#
-# APPLY ORDER (dir expansion sorts *.yaml alphabetically; numbered
-# prefixes encode order): after 71-customer-classes.yaml.
 entity: Customer
 key: CustomerID
 records:
 - CustomerID: ACMEMFG
-  CustomerName: Acme Manufacturing
   CustomerClass: B2B
+  CustomerName: Acme Manufacturing
   MainContact:
-    Email: ap@acmemfg.example
-    Phone1: "+1 (312) 555-0201"
-    Attention: Accounts Payable
     Address:
       AddressLine1: 500 Industrial Parkway
       City: Chicago
+      Country: US
+      PostalCode: '60601'
       State: IL
-      PostalCode: "60601"
-      Country: US
-  PrimaryContact:
-    FirstName: Jordan
-    LastName: Blake
-    Email: jordan.blake@acmemfg.example
-    Phone1: "+1 (312) 555-0202"
-    JobTitle: Purchasing Manager
-- CustomerID: NORTHGRID
-  CustomerName: NorthGrid Utilities
-  CustomerClass: B2B
-  MainContact:
-    Email: procurement@northgrid.example
-    Phone1: "+1 (612) 555-0301"
-    Attention: Procurement
-    Address:
-      AddressLine1: 100 Powerline Road
-      City: Minneapolis
-      State: MN
-      PostalCode: "55401"
-      Country: US
-  PrimaryContact:
-    FirstName: Avery
-    LastName: Chen
-    Email: avery.chen@northgrid.example
-    Phone1: "+1 (612) 555-0302"
-    JobTitle: Grid Operations Buyer
+    Attention: Accounts Payable
+    CompanyName: Acme Manufacturing
+    DisplayName: Acme Manufacturing
+    Email: ap@acmemfg.example
+    FullName: Acme Manufacturing
+    Phone1: +1 (312) 555-0201
+    Phone1Type: Business 1
+    Phone2Type: Business 2
 - CustomerID: AGRISENSE
-  CustomerName: AgriSense Farms
   CustomerClass: B2B
+  CustomerName: AgriSense Farms
   MainContact:
-    Email: orders@agrisense.example
-    Phone1: "+1 (515) 555-0401"
-    Attention: Farm Ops
     Address:
       AddressLine1: 8800 Heartland Highway
       City: Des Moines
-      State: IA
-      PostalCode: "50309"
       Country: US
-  PrimaryContact:
-    FirstName: Morgan
-    LastName: Ruiz
-    Email: morgan.ruiz@agrisense.example
-    Phone1: "+1 (515) 555-0402"
-    JobTitle: Operations Lead
-- CustomerID: COLDCHAIN
-  CustomerName: ColdChain Logistics
+      PostalCode: '50309'
+      State: IA
+    Attention: Farm Ops
+    CompanyName: AgriSense Farms
+    DisplayName: AgriSense Farms
+    Email: orders@agrisense.example
+    FullName: AgriSense Farms
+    Phone1: +1 (515) 555-0401
+    Phone1Type: Business 1
+    Phone2Type: Business 2
+- CustomerID: AQUAFLOW
   CustomerClass: B2B
+  CustomerName: AquaFlow Water Systems
   MainContact:
-    Email: fleet@coldchain.example
-    Phone1: "+1 (404) 555-0501"
-    Attention: Fleet Procurement
+    Address:
+      AddressLine1: 55 Canal Street
+      City: Phoenix
+      Country: US
+      PostalCode: '85004'
+      State: AZ
+    Attention: Purchasing
+    CompanyName: AquaFlow Water Systems
+    DisplayName: AquaFlow Water Systems
+    Email: purchasing@aquaflow.example
+    FullName: AquaFlow Water Systems
+    Phone1: +1 (602) 555-0701
+    Phone1Type: Business 1
+    Phone2Type: Business 2
+- CustomerID: BAYINT
+  CustomerClass: B2B
+  CustomerName: Bay Integrators
+  MainContact:
+    Address:
+      AddressLine1: 333 Embarcadero West
+      City: Oakland
+      Country: US
+      PostalCode: '94607'
+      State: CA
+    Attention: Project Desk
+    CompanyName: Bay Integrators
+    DisplayName: Bay Integrators
+    Email: projects@bayint.example
+    FullName: Bay Integrators
+    Phone1: +1 (510) 555-0801
+    Phone1Type: Business 1
+    Phone2Type: Business 2
+- CustomerID: COLDCHAIN
+  CustomerClass: B2B
+  CustomerName: ColdChain Logistics
+  MainContact:
     Address:
       AddressLine1: 2200 Reefer Boulevard
       City: Atlanta
-      State: GA
-      PostalCode: "30318"
       Country: US
-  PrimaryContact:
-    FirstName: Sam
-    LastName: Okonkwo
-    Email: sam.okonkwo@coldchain.example
-    Phone1: "+1 (404) 555-0502"
-    JobTitle: Fleet Manager
-- CustomerID: SMARTBLD
-  CustomerName: SmartBuild Properties
+      PostalCode: '30318'
+      State: GA
+    Attention: Fleet Procurement
+    CompanyName: ColdChain Logistics
+    DisplayName: ColdChain Logistics
+    Email: fleet@coldchain.example
+    FullName: ColdChain Logistics
+    Phone1: +1 (404) 555-0501
+    Phone1Type: Business 1
+    Phone2Type: Business 2
+- CustomerID: NORTHGRID
   CustomerClass: B2B
+  CustomerName: NorthGrid Utilities
   MainContact:
-    Email: facilities@smartbld.example
-    Phone1: "+1 (720) 555-0601"
-    Attention: Facilities
+    Address:
+      AddressLine1: 100 Powerline Road
+      City: Minneapolis
+      Country: US
+      PostalCode: '55401'
+      State: MN
+    Attention: Procurement
+    CompanyName: NorthGrid Utilities
+    DisplayName: NorthGrid Utilities
+    Email: procurement@northgrid.example
+    FullName: NorthGrid Utilities
+    Phone1: +1 (612) 555-0301
+    Phone1Type: Business 1
+    Phone2Type: Business 2
+- CustomerID: SMARTBLD
+  CustomerClass: B2B
+  CustomerName: SmartBuild Properties
+  MainContact:
     Address:
       AddressLine1: 1400 Skyline Avenue
       AddressLine2: Suite 800
       City: Denver
+      Country: US
+      PostalCode: '80202'
       State: CO
-      PostalCode: "80202"
-      Country: US
-  PrimaryContact:
-    FirstName: Riley
-    LastName: Patel
-    Email: riley.patel@smartbld.example
-    Phone1: "+1 (720) 555-0602"
-    JobTitle: Facilities Director
-- CustomerID: AQUAFLOW
-  CustomerName: AquaFlow Water Systems
-  CustomerClass: B2B
-  MainContact:
-    Email: purchasing@aquaflow.example
-    Phone1: "+1 (602) 555-0701"
-    Attention: Purchasing
-    Address:
-      AddressLine1: 55 Canal Street
-      City: Phoenix
-      State: AZ
-      PostalCode: "85004"
-      Country: US
-  PrimaryContact:
-    FirstName: Casey
-    LastName: Nguyen
-    Email: casey.nguyen@aquaflow.example
-    Phone1: "+1 (602) 555-0702"
-    JobTitle: Purchasing Agent
-- CustomerID: BAYINT
-  CustomerName: Bay Integrators
-  CustomerClass: B2B
-  MainContact:
-    Email: projects@bayint.example
-    Phone1: "+1 (510) 555-0801"
-    Attention: Project Desk
-    Address:
-      AddressLine1: 333 Embarcadero West
-      City: Oakland
-      State: CA
-      PostalCode: "94607"
-      Country: US
-  PrimaryContact:
-    FirstName: Quinn
-    LastName: Alvarez
-    Email: quinn.alvarez@bayint.example
-    Phone1: "+1 (510) 555-0802"
-    JobTitle: Integration Lead
+    Attention: Facilities
+    CompanyName: SmartBuild Properties
+    DisplayName: SmartBuild Properties
+    Email: facilities@smartbld.example
+    FullName: SmartBuild Properties
+    Phone1: +1 (720) 555-0601
+    Phone1Type: Business 1
+    Phone2Type: Business 2

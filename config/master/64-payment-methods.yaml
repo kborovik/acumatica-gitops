@@ -1,27 +1,65 @@
-# Payment method (CA204000) via the Default endpoint. The seven system
-# payment methods are AP-only (UseInAR false, P1 probe) - an AR customer
-# payment refuses without a UseInAR method linked to the cash account.
-# WIRE covers both sides; AllowedCashAccounts is a detail array (T60
-# machinery, rows keyed by CashAccount) linking 10100 as the default
-# account on both AP and AR.
-#
-# APPLY ORDER (dir expansion sorts *.yaml alphabetically; numbered
-# prefixes encode order): after 63-cash-account.yaml (10100 must
-# exist); before 75-vendors.yaml/76-customers.yaml scenario use.
 entity: PaymentMethod
 key: PaymentMethodID
 detail_keys:
   AllowedCashAccounts: CashAccount
 records:
-- PaymentMethodID: WIRE
-  Description: Wire transfer
+- PaymentMethodID: ACH
   Active: true
+  Description: ACH
+  MeansOfPayment: Direct Deposit
+  UseInAP: true
+  UseInAR: false
+- PaymentMethodID: ACHBA
+  Active: true
+  Description: ACH Balanced
+  MeansOfPayment: Direct Deposit
+  UseInAP: true
+  UseInAR: false
+- PaymentMethodID: BILL
+  Active: false
+  Description: Payment via BILL
+  MeansOfPayment: External Payment Processor
+  UseInAP: true
+  UseInAR: false
+- PaymentMethodID: CASH
+  Active: true
+  Description: Cash Payment
+  MeansOfPayment: Cash/Check
+  UseInAP: true
+  UseInAR: false
+- PaymentMethodID: CHECK
+  Active: true
+  Description: Check Payment
+  MeansOfPayment: Cash/Check
+  UseInAP: true
+  UseInAR: false
+- PaymentMethodID: FEDWIRE
+  Active: true
+  Description: Fedwire
+  MeansOfPayment: Cash/Check
+  UseInAP: true
+  UseInAR: false
+- PaymentMethodID: FEDWIREBA
+  Active: true
+  Description: Fedwire Balanced
+  MeansOfPayment: Cash/Check
+  UseInAP: true
+  UseInAR: false
+- PaymentMethodID: WIRE
+  Active: true
+  AllowedCashAccounts:
+  - APDefault: true
+    APSuggestNextNbr: false
+    ARDefault: true
+    ARDefaultForRefund: false
+    ARSuggestNextNbr: false
+    Branch: LAB5
+    CashAccount: '10100'
+    Description: Checking Account
+    PaymentMethod: WIRE
+    UseInAP: true
+    UseInAR: true
+  Description: Wire transfer
   MeansOfPayment: Cash/Check
   UseInAP: true
   UseInAR: true
-  AllowedCashAccounts:
-  - CashAccount: '10100'
-    UseInAP: true
-    UseInAR: true
-    APDefault: true
-    ARDefault: true

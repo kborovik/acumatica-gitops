@@ -1,85 +1,48 @@
-# Purchased-part stock items (IN202500) via the Default endpoint. The 9
-# components the gateway kits assemble from (see README). ItemClass PARTS
-# supplies valuation (Average), BaseUOM (EA), posting (inventory 12100)
-# and the availability rule - records stay minimal so class changes
-# propagate. No DefaultPrice: parts are purchased, not sold; unit costs
-# live in the scenario's PO lines. AverageCost/LastCost are
-# transaction-derived - never claimed (B11 class).
-#
-# DefaultWarehouseID WH01 explicit: items created before the class
-# carried it keep their creation-time default (MAIN, the transit
-# warehouse - PO lines then fail, P5 probe); explicit beats derived.
-#
-# WeightUOM/VolumeUOM: Packaging tab (company base UOMs are KG + LITER
-# in baseline/91-company-packaging.yaml); set on each item so existing
-# rows are not left with blank Weight/Volume UOM warnings.
-#
-# APPLY ORDER (dir expansion sorts *.yaml alphabetically; numbered
-# prefixes encode order): after 54-item-classes.yaml; before
-# 85-kit-specifications.yaml, whose components reference these items.
 entity: StockItem
 key: InventoryID
 records:
-- InventoryID: ENCL-STD
-  Description: Standard enclosure
-  ItemClass: PARTS
-  ItemStatus: Active
-  DefaultWarehouseID: WH01
-  WeightUOM: KG
-  VolumeUOM: LITER
-- InventoryID: ENCL-DIN
-  Description: DIN-rail enclosure
-  ItemClass: PARTS
-  ItemStatus: Active
-  DefaultWarehouseID: WH01
-  WeightUOM: KG
-  VolumeUOM: LITER
-- InventoryID: MB-CM4
-  Description: Gateway mainboard
-  ItemClass: PARTS
-  ItemStatus: Active
-  DefaultWarehouseID: WH01
-  WeightUOM: KG
-  VolumeUOM: LITER
-- InventoryID: MOD-LTE
-  Description: LTE modem module
-  ItemClass: PARTS
-  ItemStatus: Active
-  DefaultWarehouseID: WH01
-  WeightUOM: KG
-  VolumeUOM: LITER
 - InventoryID: ANT-LORA
+  DefaultWarehouseID: WH01
   Description: LoRa antenna
   ItemClass: PARTS
   ItemStatus: Active
-  DefaultWarehouseID: WH01
-  WeightUOM: KG
-  VolumeUOM: LITER
 - InventoryID: ANT-LTE
+  DefaultWarehouseID: WH01
   Description: LTE antenna
   ItemClass: PARTS
   ItemStatus: Active
-  DefaultWarehouseID: WH01
-  WeightUOM: KG
-  VolumeUOM: LITER
-- InventoryID: PSU-12V
-  Description: 12V power supply
-  ItemClass: PARTS
-  ItemStatus: Active
-  DefaultWarehouseID: WH01
-  WeightUOM: KG
-  VolumeUOM: LITER
-- InventoryID: SD-32GB
-  Description: 32GB industrial SD card
-  ItemClass: PARTS
-  ItemStatus: Active
-  DefaultWarehouseID: WH01
-  WeightUOM: KG
-  VolumeUOM: LITER
 - InventoryID: CBL-PWR
+  DefaultWarehouseID: WH01
   Description: Power cable
   ItemClass: PARTS
   ItemStatus: Active
+- InventoryID: ENCL-DIN
   DefaultWarehouseID: WH01
-  WeightUOM: KG
-  VolumeUOM: LITER
+  Description: DIN-rail enclosure
+  ItemClass: PARTS
+  ItemStatus: Active
+- InventoryID: ENCL-STD
+  DefaultWarehouseID: WH01
+  Description: Standard enclosure
+  ItemClass: PARTS
+  ItemStatus: Active
+- InventoryID: MB-CM4
+  DefaultWarehouseID: WH01
+  Description: Gateway mainboard
+  ItemClass: PARTS
+  ItemStatus: Active
+- InventoryID: MOD-LTE
+  DefaultWarehouseID: WH01
+  Description: LTE modem module
+  ItemClass: PARTS
+  ItemStatus: Active
+- InventoryID: PSU-12V
+  DefaultWarehouseID: WH01
+  Description: 12V power supply
+  ItemClass: PARTS
+  ItemStatus: Active
+- InventoryID: SD-32GB
+  DefaultWarehouseID: WH01
+  Description: 32GB industrial SD card
+  ItemClass: PARTS
+  ItemStatus: Active

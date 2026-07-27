@@ -1,17 +1,11 @@
-# Credit terms (CS206500) via the custom Bootstrap endpoint (symbolic
-# endpoint: bootstrap resolves to the active package version - V20).
-# The Default endpoint has no credit-terms entity. List values are the
-# EXTERNAL labels: VisibleTo = All, Vendors, Customers, Disabled;
-# DueType/DiscType = Fixed Number of Days, Day of Next Month, End of
-# Month, ...
 entity: CreditTerms
 key: TermsID
 endpoint: bootstrap
 records:
 - TermsID: NET30
-  Descr: Net 30 Days
-  VisibleTo: All
-  DueType: Fixed Number of Days
   DayDue00: 30
+  Descr: Net 30 Days
+  DiscPercent: 0.0
   DiscType: Fixed Number of Days
-  DiscPercent: 0
+  DueType: Fixed Number of Days
+  VisibleTo: All

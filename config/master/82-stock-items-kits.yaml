@@ -1,47 +1,24 @@
-# Kit stock items (IN202500) via the Default endpoint - the 3 assembled
-# gateway products (see README). IsAKit marks them stock kits; the
-# KitSpecification (85-) carries each kit's component list. ItemClass
-# KITS books inventory to 12200. DefaultPrice = list sales price the
-# scenario's sales orders reference.
-#
-# DefaultWarehouseID WH01 explicit: items created before the class
-# carried it keep their creation-time default (MAIN, the transit
-# warehouse - PO lines then fail, P5 probe); explicit beats derived.
-#
-# WeightUOM/VolumeUOM: Packaging tab inherits company base UOMs
-# (baseline/91-company-packaging.yaml KG + LITER) but existing items
-# keep blank fields unless set here - empty Weight/Volume UOM warns.
-#
-# APPLY ORDER (dir expansion sorts *.yaml alphabetically; numbered
-# prefixes encode order): after 54-item-classes.yaml; before
-# 85-kit-specifications.yaml (a kit spec needs its kit item).
 entity: StockItem
 key: InventoryID
 records:
-- InventoryID: GW-EDGE
-  Description: Edge IoT Gateway
-  ItemClass: KITS
-  ItemStatus: Active
-  DefaultWarehouseID: WH01
-  IsAKit: true
-  DefaultPrice: 299.00
-  WeightUOM: KG
-  VolumeUOM: LITER
 - InventoryID: GW-CELL
+  DefaultPrice: 449.0
+  DefaultWarehouseID: WH01
   Description: Cellular IoT Gateway
+  IsAKit: true
   ItemClass: KITS
   ItemStatus: Active
+- InventoryID: GW-EDGE
+  DefaultPrice: 299.0
   DefaultWarehouseID: WH01
+  Description: Edge IoT Gateway
   IsAKit: true
-  DefaultPrice: 449.00
-  WeightUOM: KG
-  VolumeUOM: LITER
+  ItemClass: KITS
+  ItemStatus: Active
 - InventoryID: GW-RAIL
+  DefaultPrice: 349.0
+  DefaultWarehouseID: WH01
   Description: DIN-Rail Industrial Gateway
+  IsAKit: true
   ItemClass: KITS
   ItemStatus: Active
-  DefaultWarehouseID: WH01
-  IsAKit: true
-  DefaultPrice: 349.00
-  WeightUOM: KG
-  VolumeUOM: LITER
