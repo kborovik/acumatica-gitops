@@ -6,7 +6,7 @@ SHELL := /bin/bash
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 
 # Ephemeral tenant for `make check` (override: make check CHECK_TENANT_ID=90 CHECK_TENANT=SMOKE)
-CHECK_TENANT_ID ?= 99
+CHECK_TENANT_ID ?= 89
 CHECK_TENANT    ?= CHECK
 
 default: help
