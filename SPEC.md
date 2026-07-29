@@ -16,18 +16,30 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 
 ## §I INTERFACES
 
-- cmd: `acu apply config/` → PUT/actions from config umbrella (bootstrap/baseline/setup/master)
-- cmd: `acu run scenario/` → ordered scenario YAMLs; once-class skip-if-present (CLI-enforced)
-- cmd: `acu diff config/` → drift report vs live tenant on apply trees
+- cmd: `acu config check` → read-only preflight (.env, target.yaml, REST, ?SSH)
+- cmd: `acu tenant create --id N --login NAME` → create + bootstrap (SSH); re-run republishes
+- cmd: `acu tenant list|delete|recycle` → tenant CRUD / app-pool recycle (SSH)
+- cmd: `acu bootstrap` → publish AcuBootstrap (REST); `--export PATH` offline zip
+- cmd: `acu apply [config/]` → PUT/actions config umbrella bootstrap/baseline/setup/master; bare prefers config/
+- cmd: `acu run [scenario/]` → ordered scenario YAMLs; once-class skip-if-present; bare defaults scenario/
+- cmd: `acu diff [config/]` → drift vs live on apply trees; exit 2 on drift; bare prefers config/
+- cmd: `acu state` → capture config/views/ → state/; `--assert-unchanged` exit 2 when moved
+- cmd: `acu extract` → live tenant → config/{bootstrap,baseline,setup,master}/ (inverse apply)
+- cmd: `acu inventory ARTIFACT` → offline SM203520 XML or ac.exe export xml → inventory/
+- cmd: `acu reconcile` → offline inventory/ vs ?config/ → findings/
+- cmd: `acu schema` → dump OpenAPI → schemas/
 - yaml: `config/bootstrap/*.yaml` → company, features, credit terms (bootstrap endpoint)
 - yaml: `config/baseline/*.yaml` → GL/subaccount/UOM foundation (Default + bootstrap endpoints)
 - yaml: `config/setup/*.yaml` → fin year, master calendar, open periods (actions)
 - yaml: `config/master/*.yaml` → inventory, warehouse, customers, vendors, items, module prefs, roles, users
+- yaml: `config/views/*.yaml` → state observation defs (not seed; acu state input)
 - yaml: `scenario/10-seed-capital.yaml` → once-class owner capital JE (Dr 10100 / Cr 30000)
 - yaml: `scenario/20-buy.yaml` → additive component PO → receipt → bill → AP pay (four vendors)
 - yaml: `scenario/30-build.yaml` → additive kit assembly (parts → GW kits)
 - yaml: `scenario/40-sell.yaml` → additive SO → ship → invoice → AR pay (three-customer pack)
-- env: `ACU_BASE_URL`, `ACU_TENANT`, `ACU_API_VERSION`, `ACU_USER`, `ACU_PASSWORD` ! set for live apply
+- yaml: `state/*.yaml` → committed derived observations (acu state output)
+- yaml: `target.yaml` → erp + default_api pin (API version when --api-version absent)
+- env: `ACU_BASE_URL`, `ACU_TENANT`, `ACU_USER`, `ACU_PASSWORD` ! set for live apply; `ACU_SSH` ? (default Administrator@host; blank = hosted); no ACU_API_VERSION
 - entity: Company (AcctCD/AcctName), Account, Ledger, Subaccount, UnitsOfMeasure, InventoryItem, Customer, Vendor, SalesOrder, Role, User, …
 
 ## §V INVARIANTS
