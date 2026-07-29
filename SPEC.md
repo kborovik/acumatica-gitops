@@ -12,6 +12,7 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - Target matrix: `target.yaml` (erp 26.101.0225, default_api 25.200.001); tenant id from env (`ACU_TENANT=LAB5`).
 - Demo data only; not production cutover / not multi-industry catalog this pass.
 - Apply trees under `config/`; linked history under `scenario/` lifecycle files (once seed + additive buy/build/sell); not rename-only scaffold.
+- Demo SO login: user `soadmin` w/ role `SO Admin` (descr Full access to SO functions and settings); password ! in Git.
 
 ## §I INTERFACES
 
@@ -21,13 +22,13 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - yaml: `config/bootstrap/*.yaml` → company, features, credit terms (bootstrap endpoint)
 - yaml: `config/baseline/*.yaml` → GL/subaccount/UOM foundation (Default + bootstrap endpoints)
 - yaml: `config/setup/*.yaml` → fin year, master calendar, open periods (actions)
-- yaml: `config/master/*.yaml` → inventory, warehouse, customers, vendors, items, module prefs
+- yaml: `config/master/*.yaml` → inventory, warehouse, customers, vendors, items, module prefs, roles, users
 - yaml: `scenario/10-seed-capital.yaml` → once-class owner capital JE (Dr 10100 / Cr 30000)
 - yaml: `scenario/20-buy.yaml` → additive component PO → receipt → bill → AP pay (four vendors)
 - yaml: `scenario/30-build.yaml` → additive kit assembly (parts → GW kits)
 - yaml: `scenario/40-sell.yaml` → additive SO → ship → invoice → AR pay (three-customer pack)
 - env: `ACU_BASE_URL`, `ACU_TENANT`, `ACU_API_VERSION`, `ACU_USER`, `ACU_PASSWORD` ! set for live apply
-- entity: Company (AcctCD/AcctName), Account, Ledger, Subaccount, UnitsOfMeasure, InventoryItem, Customer, Vendor, SalesOrder, …
+- entity: Company (AcctCD/AcctName), Account, Ledger, Subaccount, UnitsOfMeasure, InventoryItem, Customer, Vendor, SalesOrder, Role, User, …
 
 ## §V INVARIANTS
 
@@ -66,6 +67,7 @@ T18|x|open GitHub issue kborovik/acumatica-cli: once-guard skip-if-present + tem
 T19|x|after CLI once ships: warm second acu run scenario/ keeps capital 50000|V7,V9
 T20|x|split buy-build-sell: 20-buy parts (4 vendors) 30-build kit assembly 40-sell; drop finished-goods buy|V3,V6,V10
 T21|x|live probe KitAssembly Type/Status; green acu run scenario/ on buy+build+sell|V3,V6,V7
+T22|.|seed Role SO Admin + User soadmin + membership via acu apply config/master/; role before user (V5); password ! committed (V8)|V5,V8,I.yaml
 
 ## §B BUGS
 
