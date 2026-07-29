@@ -3,5 +3,7 @@
 .env
 __pycache__
 demo/out/
+findings/
+inventory/
 schemas/
 state/
