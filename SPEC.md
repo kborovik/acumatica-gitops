@@ -13,6 +13,8 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - Demo data only; not production cutover / not multi-industry catalog this pass.
 - Apply trees under `config/`; linked history under `scenario/` lifecycle files (once seed + additive buy/build/sell); not rename-only scaffold.
 - Demo SO login: user `soadmin` w/ role `SO Admin` (descr Full access to SO functions and settings); password ! in Git.
+- Demo AP login: user `apadmin` w/ built-in role `AP Admin`; password ! in Git.
+- Demo AR login: user `aradmin` w/ built-in role `AR Admin`; password ! in Git.
 
 ## §I INTERFACES
 
@@ -81,6 +83,8 @@ T19|x|after CLI once ships: warm second acu run scenario/ keeps capital 50000|V7
 T20|x|split buy-build-sell: 20-buy parts (4 vendors) 30-build kit assembly 40-sell; drop finished-goods buy|V3,V6,V10
 T21|x|live probe KitAssembly Type/Status; green acu run scenario/ on buy+build+sell|V3,V6,V7
 T22|.|seed Role SO Admin + User soadmin + membership via acu apply config/master/; role before user (V5); password ! committed (V8)|V5,V8,I.yaml
+T23|.|seed User apadmin + membership built-in role AP Admin via acu apply config/master/; role exists (no Role YAML); password ! committed (V8)|V5,V8,I.yaml
+T24|.|seed User aradmin + membership built-in role AR Admin via acu apply config/master/; role exists (no Role YAML); password ! committed (V8)|V5,V8,I.yaml
 
 ## §B BUGS
 
