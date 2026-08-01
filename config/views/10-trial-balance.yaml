@@ -3,7 +3,7 @@ source:
   inquire: AccountSummaryInquiry
   params:
     Ledger: ACTUAL
-    Period: "072026"
+    Period: "082026"
 key:
   - Account
 capture:

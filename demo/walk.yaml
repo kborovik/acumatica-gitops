@@ -22,8 +22,7 @@ settings:
   video: true
   vo: true
   ensure_captures: true
-  # tenant_name: DEMO   # login label; default DEMO if unset
-  # tenant_id: "99"     # company id; browser only (default 99 if unset)
+  tenant_name: GITOPS # login label; default DEMO if unset
   youtube: true # emit yt-description + yt-thumb under video/ (same take TS)
   title: "Acumatica Demo Tenant Factory | GitOps ERP from Empty to Linked History"
   description: |

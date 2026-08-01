@@ -131,6 +131,6 @@ expect:
   parameters: {InventoryID: CBL-PWR, WarehouseID: WH01}
   delta: {QtyOnHand: -20.0}
 - inquire: AccountSummaryInquiry
-  parameters: {Ledger: ACTUAL, Period: "072026"}
+  parameters: {Ledger: ACTUAL, Period: "082026"}
   match: {Account: '10100'}
   delta: {EndingBalance: 0.00}

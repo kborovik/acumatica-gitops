@@ -5,7 +5,7 @@ SHELL := /bin/bash
 .SHELLFLAGS := -euo pipefail -c
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 
-CHECK_TENANT ?= LAB5
+CHECK_TENANT ?= GITOPS
 
 default: help
 
