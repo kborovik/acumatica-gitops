@@ -17,8 +17,9 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 ## §I INTERFACES
 
 - cmd: `acu config check` → read-only preflight (.env, target.yaml, REST, ?SSH)
-- cmd: `acu tenant create --id N --login NAME` → create + bootstrap (SSH); re-run republishes
-- cmd: `acu tenant list|delete|recycle` → tenant CRUD / app-pool recycle (SSH)
+- cmd: `acu tenant create --login NAME` → create + bootstrap (SSH); re-run republishes; --id optional (omit = next free)
+- cmd: `acu tenant delete --login NAME [--yes]` → delete + recycle app pool (SSH); --id alt
+- cmd: `acu tenant list|recycle` → list tenants / app-pool recycle (SSH)
 - cmd: `acu bootstrap` → publish AcuBootstrap (REST); `--export PATH` offline zip
 - cmd: `acu apply [config/]` → PUT/actions config umbrella bootstrap/baseline/setup/master; bare prefers config/
 - cmd: `acu run [scenario/]` → ordered scenario YAMLs; once-class skip-if-present; bare defaults scenario/

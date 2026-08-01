@@ -5,36 +5,24 @@ SHELL := /bin/bash
 .SHELLFLAGS := -euo pipefail -c
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 
-# Ephemeral tenant for `make check` (override: make check CHECK_TENANT_ID=90 CHECK_TENANT=SMOKE)
-CHECK_TENANT_ID ?= 89
-CHECK_TENANT    ?= CHECK
+CHECK_TENANT ?= LAB5
 
 default: help
 
-.PHONY: help install tenants apply diff run pipeline check encrypt decrypt \
-        demo demo-clean demo-vo release major minor patch
+.PHONY: help
 
-install: ## Install the acu CLI on PATH (from PyPI)
-	uv tool install acumatica-cli --upgrade
-
-tenants: ## List tenants on the instance
-	acu tenant list
-
-apply: ## Apply tenant configuration (config/ umbrella)
-	acu apply config/
-
-diff: ## Drift check: live vs. applied configuration (config/ umbrella)
-	acu diff config/
-
-run: ## Run full lifecycle scenarios (once capital + buy + build + sell)
-	acu run scenario/
-
-check: ## E2E test
-	trap 'acu tenant delete --id $(CHECK_TENANT_ID) --yes || true' EXIT
-	acu tenant create --id $(CHECK_TENANT_ID) --login $(CHECK_TENANT)
+check: ## Full end-to-end test (always recreate tenant from clean)
+	trap 'acu tenant delete --login $(CHECK_TENANT) --yes || true' EXIT
+	acu tenant delete --login $(CHECK_TENANT) --yes || true
+	acu tenant create --login $(CHECK_TENANT)
 	acu --tenant $(CHECK_TENANT) apply config/
 	acu --tenant $(CHECK_TENANT) run scenario/
 	acu --tenant $(CHECK_TENANT) diff config/
+
+record: ## Record a YouTube video
+	acu tenant delete --login $(CHECK_TENANT) --yes || true
+	acu-walk clean --yes
+	acu-walk record --yes
 
 ###############################################################################
 # Colors and Headers

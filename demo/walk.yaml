@@ -1,10 +1,19 @@
-# acu-walk script — shoot settings + CLI recipes + beats.
+# acu-walk script — LAB5 Electronics Inc. manufacturer demo pitch (lab5.ca).
+# Narrative:
+#   problem → empty tenant → apply masters → seed capital
+#   → buy / build / sell legs → cash position → clean diff.
+# Drivers: config/** (bootstrap/baseline/setup/master) + scenario/10,20,30,40
+#   + config/views/** (state observations). Not a cutover pack film.
 # Credentials from workspace .env (same as `acu`):
 #   ACU_BASE_URL, ACU_USER, ACU_PASSWORD  (required for live ops)
-# Optional acu-channel only: ACU_TENANT / ACU_TENANT_ID (not walk-target sources)
-# Walk target: settings.tenant_name / tenant_id (defaults DEMO / 99)
-# Resolve: --tenant-name/--tenant-id > settings > DEMO/99
-# Interp: ${tenant} ${tenant_id} ${root} ${env:NAME}
+# Optional acu-channel only: ACU_TENANT (not a walk-target source)
+# Walk target: settings.tenant_name (default DEMO); tenant_id optional for browser only
+# Resolve: --tenant-name > settings > DEMO
+# Interp: ${tenant} ${root} ${env:NAME}
+# Tenant CRUD is login-only: `acu tenant create --login …` (no --id)
+#
+# VO budget: ~2.4 w/s. Static frames (login, empty grids) stay ~25–30 words.
+# CLI panes may run longer (scroll is the visual).
 
 version: 1
 settings:
@@ -14,17 +23,32 @@ settings:
   vo: true
   ensure_captures: true
   # tenant_name: DEMO   # login label; default DEMO if unset
-  # tenant_id: "99"     # company id; default 99 if unset
+  # tenant_id: "99"     # company id; browser only (default 99 if unset)
+  youtube: true # emit yt-description + yt-thumb under video/ (same take TS)
+  title: "Acumatica Demo Tenant Factory | GitOps ERP from Empty to Linked History"
+  description: |
+    Acumatica demo tenant from empty to company, masters, and linked
+    transaction history — seed capital, buy components, assemble kits,
+    sell, invoice, collect. One Git tree, every run.
+
+    Demo Tenant Factory path shown end-to-end:
+    • Tenant create (empty) + GitOps apply (COA, warehouse, items, parties)
+    • Once-class owner capital, then buy / build / sell scenarios
+    • Clean configuration diff vs the repo
+
+    Built for partner demos and prospect-specific rebuilds — same tree,
+    every run. Company: LAB5 Electronics Inc. (lab5.ca pitch).
+
+    #Acumatica #GitOps #DemoTenant #ERP #Manufacturing
   # headed: false
   # width: 1600
   # height: 900
-  # refresh_captures: false
   # vo_provider: speechify
   # vo_emotion: direct
 
 cli:
   tenant-create:
-    argv: ["acu", "tenant", "create", "--id", "${tenant_id}", "--login", "${tenant}"]
+    argv: ["acu", "tenant", "create", "--login", "${tenant}"]
     write: true
     when: before-login
     ok_exits: [0]

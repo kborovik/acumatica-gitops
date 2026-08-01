@@ -43,7 +43,7 @@ acu config check
 
 # 2. Empty tenant + bootstrap (SSH control plane)
 # create also publishes AcuBootstrap — ready for apply
-acu tenant create --id N --login TENANT
+acu tenant create --login TENANT
 # Hosted / tenant already exists: acu bootstrap
 # Offline UI fallback: acu bootstrap --export AcuBootstrap.zip
 
@@ -85,7 +85,7 @@ acu run scenario/10-seed-capital.yaml && acu state --assert-unchanged
 | Command | Role |
 |---------|------|
 | `acu tenant list` | List tenants on the instance (SSH) |
-| `acu tenant delete --id N --yes` | Delete tenant + recycle app pool |
+| `acu tenant delete --login TENANT --yes` | Delete tenant + recycle app pool |
 | `acu tenant recycle --yes` | Restart site app pool (free API slots / reload tenant map) |
 | `acu extract` | Inverse of apply: live tenant → `config/**` seed YAML |
 | `acu schema` | Dump endpoint OpenAPI into `schemas/` |
