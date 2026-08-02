@@ -1,0 +1,15 @@
+view: trial-balance
+erp: "26.101.0225"
+rows:
+  - {Account: "10100", CreditTotal: "4037.00", DebitTotal: "52196.00", Description: "Checking Account", EndingBalance: "48159.00"}
+  - {Account: "11000", CreditTotal: "2196.00", DebitTotal: "4138.00", Description: "Accounts Receivable", EndingBalance: "1942.00"}
+  - {Account: "12100", CreditTotal: "3090.00", DebitTotal: "4037.00", Description: "Inventory - Components", EndingBalance: "947.00"}
+  - {Account: "12200", CreditTotal: "1848.00", DebitTotal: "3090.00", Description: "Inventory - Finished Goods", EndingBalance: "1242.00"}
+  - {Account: "12300", CreditTotal: "3090.00", DebitTotal: "3090.00", Description: "Work In Progress", EndingBalance: "0.00"}
+  - {Account: "20100", CreditTotal: "4037.00", DebitTotal: "4037.00", Description: "Accounts Payable", EndingBalance: "0.00"}
+  - {Account: "20200", CreditTotal: "4037.00", DebitTotal: "4037.00", Description: "PO Accrual", EndingBalance: "0.00"}
+  - {Account: "30000", CreditTotal: "50000.00", DebitTotal: "0.00", Description: "Owner Capital", EndingBalance: "50000.00"}
+  - {Account: "32000", CreditTotal: "0.00", DebitTotal: "0.00", Description: "Retained Earnings", EndingBalance: "0.00"}
+  - {Account: "33000", CreditTotal: "4138.00", DebitTotal: "1848.00", Description: "Net Income", EndingBalance: "2290.00"}
+  - {Account: "40000", CreditTotal: "4138.00", DebitTotal: "0.00", Description: "Sales - Gateways", EndingBalance: "4138.00"}
+  - {Account: "50000", CreditTotal: "0.00", DebitTotal: "1848.00", Description: "COGS - Gateways", EndingBalance: "1848.00"}
