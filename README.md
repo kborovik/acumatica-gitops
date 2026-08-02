@@ -23,6 +23,8 @@ Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acum
 | `scenario/40-sell.yaml` | Additive SO to ship to invoice (three customers; no AR pay) |
 | `scenario/45-collect.yaml` | Additive mixed AR collect: ACMEMFG full, NORTHGRID partial, AGRISENSE open |
 | `state/` | Committed derived observations (`acu state` from `config/views/`) |
+| `overlays/` | Optional Default-half rewrites (compose after trunk via path args) |
+| `reports/` | Multi-host matrix evidence templates and run notes |
 | `demo/` | Everything for the sales video: shooting script, screen↔seed map, scripted GUI walk |
 | `SPEC.md` | Spec-driven design (goal, invariants, tasks) |
 | `target.yaml` | Verified ERP build + Default API pin (`erp`, `default_api`) |
@@ -121,8 +123,39 @@ Cold reshoot: `make demo-clean && make demo`.
 - Multi-industry catalog (this seed is IoT gateway manufacturing / kit assembly)
 - Secrets or host credentials in Git (`V8`)
 
-## Target matrix
+## Target matrix (trunk + pins + overlays)
 
-See `target.yaml` (`erp` build + `default_api`).
+Multi-version support is **one trunk seed** plus per-host pins and optional
+overlays — **not** long-running release branches as product lines
+(`acu-25r1` / `acu-25r2` / `acu-26r1` are not parallel product trees).
+
+| Piece | Role |
+|-------|------|
+| Trunk seed | Canonical `config/` + `scenario/` (newest supported matrix) |
+| `target.yaml` | Host pin: `erp` + `default_api` from live `acu config check` |
+| `overlays/<default-half>/` | Surgical rewrites keyed by Default API half (e.g. `default-24.200.001`) |
+| `reports/` | Matrix evidence: seed SHA × host × pin × overlay × outcomes |
+
+### Pins
+
+See `target.yaml` on this host (`erp` build + `default_api`).
 `acu` resolves the contract API version from `--api-version`, else `default_api`,
 else the CLI code default — not from `.env`.
+Pins must be **host-true** from live check (invalid Default halves forbidden).
+
+### Overlay compose
+
+Overlays are ordinary path args after the trunk tree (later path wins same keys
+for apply/diff). No `acu apply --overlay` flag.
+
+```sh
+# Config overlays (entity key merge on apply/diff)
+acu apply config/ overlays/default-24.200.001/
+acu diff config/ overlays/default-24.200.001/
+
+# Scenario overlay: Default 24.200.001 needs KitAssembly Type Assembly
+# (trunk uses Production for Default 25.200.001+)
+acu run scenario/10-seed-capital.yaml scenario/20-buy.yaml \
+  overlays/default-24.200.001/scenario/30-build.yaml \
+  scenario/40-sell.yaml scenario/45-collect.yaml
+```
