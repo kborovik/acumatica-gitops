@@ -14,3 +14,13 @@ records:
   Roles:
   - Rolename: SO Admin
     Selected: true
+- Username: apadmin
+  FirstName: AP
+  LastName: Admin
+  Email: apadmin@example.com
+  IsApproved: true
+  PasswordNeverExpires: true
+  PasswordChangeOnNextLogin: false
+  Roles:
+  - Rolename: AP Admin
+    Selected: true
