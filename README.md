@@ -129,6 +129,10 @@ Multi-version support is **one trunk seed** plus per-host pins and optional
 overlays — **not** long-running release branches as product lines
 (`acu-25r1` / `acu-25r2` / `acu-26r1` are not parallel product trees).
 
+**Trunk branch:** `acu-26r1` is the default trunk today (origin/HEAD).
+Rename to `main` is deferred until after overlay path is green on lab hosts;
+until then, open work lands on `acu-26r1`.
+
 | Piece | Role |
 |-------|------|
 | Trunk seed | Canonical `config/` + `scenario/` (newest supported matrix) |

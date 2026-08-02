@@ -106,7 +106,7 @@ T31|x|add 45-collect: ACMEMFG full 1196; NORTHGRID partial 1000; AGRISENSE no st
 T32|x|acu run scenario/ cold green; acu diff config/ clean; acu state → commit trial-balance|V7,V11
 T33|x|README + walk.yaml: collect leg, open AR beat, cash 48159; drop full-collect VO|V1,V6,V11
 T34|x|README: trunk + target.yaml + overlays model; no long-running release branches as product lines|V12,V14
-T35|.|choose + document trunk branch name (main or keep acu-26r1 default until rename)|V12
+T35|x|choose + document trunk branch name (main or keep acu-26r1 default until rename)|V12
 T36|.|trunk seed: drop or gate PaymentMethod BILL so cold acu apply config/ completes|V15,V7
 T37|.|add overlays/default-24.200.001 KitAssembly Type Assembly (vs Production) + document apply path|V14,V12
 T38|.|correct any committed 25r1 pin examples to host-true Default half 24.200.001|V13
