@@ -3,5 +3,9 @@ key: TransitAcctId
 endpoint: bootstrap
 records:
 - TransitAcctId: '10200'
-  HoldEntry: false
   TransitSubID: '000000'
+  HoldEntry: false
+  BatchNumberingID: BATCH
+  AutoPostOption: true
+  ReleaseAP: true
+  ReleaseAR: true

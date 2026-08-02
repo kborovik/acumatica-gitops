@@ -3,13 +3,22 @@ key: HoldEntry
 endpoint: bootstrap
 records:
 - HoldEntry: false
-  AdjustmentReasonCode: INADJUST
   INProgressAcctID: '12300'
   INProgressSubID: '000000'
   INTransitAcctID: '12400'
   INTransitSubID: '000000'
-  IssuesReasonCode: INISSUE
-  PIReasonCode: INPI
-  ReceiptReasonCode: INRECEIPT
   TransitBranchID: LAB5
   UpdateGL: true
+  IssuesReasonCode: INISSUE
+  ReceiptReasonCode: INRECEIPT
+  AdjustmentReasonCode: INADJUST
+  PIReasonCode: INPI
+  BatchNumberingID: BATCH
+  ReceiptNumberingID: INRECEIPT
+  IssueNumberingID: INISSUE
+  AdjustmentNumberingID: INADJUST
+  KitAssemblyNumberingID: INKITASSY
+  AutoPost: true
+  SummPost: false
+  NegQty: false
+  RequireControlTotal: true

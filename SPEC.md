@@ -88,7 +88,7 @@ T23|.|seed User apadmin + membership built-in AP Admin; password ! committed|V5,
 T24|.|seed User aradmin + membership built-in AR Admin; password ! committed|V5,V8,I.yaml,T25
 T25|x|sync config/bootstrap/project.xml ← acu-cli Bootstrap/1.3.0 (config init source; Role/User/NumberingSequence + prefs depth)|V4,V7,I.yaml
 T26|x|seed config/master/05-numbering-sequences.yaml NumberingSequence bootstrap; before prefs that cite *NumberingID|V5,T25
-T27|.|deepen master *Preferences YAML to 1.3.0 field depth (acu-cli template parity)|V4,T25,T26
+T27|x|deepen master *Preferences YAML to 1.3.0 field depth (acu-cli template parity)|V4,T25,T26
 
 ## §B BUGS
 

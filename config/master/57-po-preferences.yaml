@@ -3,5 +3,8 @@ key: HoldReceipts
 endpoint: bootstrap
 records:
 - HoldReceipts: false
-  AutoReleaseIN: true
   RCReturnReasonCodeID: PORETURN
+  AutoReleaseIN: true
+  RegularPONumberingID: POORDER
+  ReceiptNumberingID: PORECEIPT
+  AutoReleaseAP: false
