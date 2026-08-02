@@ -96,7 +96,8 @@ acu run scenario/10-seed-capital.yaml && acu state --assert-unchanged
 ## Pitch path
 
 See [demo/walk.yaml](demo/walk.yaml) — the promo video's script, shot plan and
-narration, and the beat-by-beat source for this path. Short version:
+narration, and the beat-by-beat source for this path.
+Short version:
 
 1. Company **LAB5 Electronics Inc.**
 2. Bank funded (Owner Capital to Checking 10100)
@@ -104,9 +105,11 @@ narration, and the beat-by-beat source for this path. Short version:
 4. Kit assembly (parts to finished gateways)
 5. Sales order, shipment, invoice, WIRE payment (all three customers paid)
 
-The walk itself is scripted — see [demo/](demo/README.md). One command captures the
+The walk itself is scripted — see [demo/](demo/README.md).
+One command captures the
 full product: `make demo` ensures CLI replay logs, drives every beat, and writes
-stills plus `demo/out/video/walk.webm`. Cold reshoot: `make demo-clean && make demo`.
+stills plus `demo/out/video/walk.webm`.
+Cold reshoot: `make demo-clean && make demo`.
 
 ## Non-goals
 
