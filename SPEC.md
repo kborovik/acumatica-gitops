@@ -15,6 +15,8 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - Demo SO login: user `soadmin` w/ role `SO Admin` (descr Full access to SO functions and settings); password ! in Git.
 - Demo AP login: user `apadmin` w/ built-in role `AP Admin`; password ! in Git.
 - Demo AR login: user `aradmin` w/ built-in role `AR Admin`; password ! in Git.
+- Multi-version: one trunk seed + per-host `target.yaml` + optional Default-half overlays; long-running release branches not product lines
+- CLI floor: acumatica-cli ≥ 0.23.1 (apply multi-error, 422 field errors, Bootstrap package SoT 1.4.0)
 
 ## §I INTERFACES
 
@@ -22,28 +24,29 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - cmd: `acu tenant create --login NAME` → create + bootstrap (SSH); re-run republishes; --id optional (omit = next free)
 - cmd: `acu tenant delete --login NAME [--yes]` → delete + recycle app pool (SSH); --id alt
 - cmd: `acu tenant list|recycle` → list tenants / app-pool recycle (SSH)
-- cmd: `acu bootstrap` → publish AcuBootstrap (REST); `--export PATH` offline zip
-- cmd: `acu apply [config/]` → PUT/actions config umbrella bootstrap/baseline/setup/master; bare prefers config/
+- cmd: `acu bootstrap` → publish AcuBootstrap (REST package SoT 1.4.0+); `--export PATH` offline zip; data-repo `project.xml` not seed
+- cmd: `acu apply [paths…]` → PUT/actions trees; path args may append overlay dirs (later wins same keys); per-record continue + multi-error exit 1 (never silent partial); bare prefers config/
 - cmd: `acu run [scenario/]` → ordered scenario YAMLs; once-class skip-if-present; bare defaults scenario/
-- cmd: `acu diff [config/]` → drift vs live on apply trees; exit 2 on drift; bare prefers config/
+- cmd: `acu diff [paths…]` → drift vs live; same path-arg compose as apply; exit 2 on drift; bare prefers config/
 - cmd: `acu state` → capture config/views/ → state/; `--assert-unchanged` exit 2 when moved
 - cmd: `acu extract` → live tenant → config/{bootstrap,baseline,setup,master}/ (inverse apply)
 - cmd: `acu inventory ARTIFACT` → offline SM203520 XML or ac.exe export xml → inventory/
 - cmd: `acu reconcile` → offline inventory/ vs ?config/ → findings/
-- cmd: `acu schema` → dump OpenAPI → schemas/
+- cmd: `acu schema` → dump OpenAPI → schemas/ (live; not multi-version SoT)
 - yaml: `config/bootstrap/*.yaml` → company, features, credit terms NET30 + COD (bootstrap endpoint)
-- yaml: `config/bootstrap/project.xml` → Bootstrap/1.3.0 contract (Role/User/NumberingSequence + *Preferences depth; acu config init source)
 - yaml: `config/baseline/*.yaml` → GL/subaccount/UOM foundation (Default + bootstrap endpoints)
 - yaml: `config/setup/*.yaml` → fin year, master calendar, open periods (actions)
 - yaml: `config/master/*.yaml` → inventory, warehouse, customers, vendors, items, module prefs, roles, users, numbering sequences
 - yaml: `config/views/*.yaml` → state observation defs (not seed; acu state input)
+- yaml: `overlays/<default-half>/` → surgical seed rewrites keyed by Default API half (e.g. `default-24.200.001`); compose after trunk
 - yaml: `scenario/10-seed-capital.yaml` → once-class owner capital JE (Dr 10100 / Cr 30000)
 - yaml: `scenario/20-buy.yaml` → additive component PO → receipt → bill → AP pay (four vendors)
 - yaml: `scenario/30-build.yaml` → additive kit assembly (parts → GW kits)
 - yaml: `scenario/40-sell.yaml` → additive SO → ship → invoice release (three-customer pack; no AR pay)
 - yaml: `scenario/45-collect.yaml` → additive AR collect: ACMEMFG full 1196; NORTHGRID partial 1000; AGRISENSE open
 - yaml: `state/*.yaml` → committed derived observations (acu state output)
-- yaml: `target.yaml` → erp + default_api pin (API version when --api-version absent)
+- yaml: `reports/*` → multi-host matrix evidence (seed SHA × host × pin × overlay × outcomes); not seed
+- yaml: `target.yaml` → erp + default_api pin (API version when --api-version absent); host-true from live check
 - env: `ACU_BASE_URL`, `ACU_TENANT`, `ACU_USER`, `ACU_PASSWORD` ! set for live apply; `ACU_SSH` ? (default Administrator@host; blank = hosted); no ACU_API_VERSION
 - entity: Company (AcctCD/AcctName), Account, Ledger, Subaccount, UnitsOfMeasure, InventoryItem, Customer, Vendor, SalesOrder, Role, User, NumberingSequence, …
 
@@ -60,6 +63,11 @@ V8: no-secrets-in-seed — seed YAML + committed docs never contain passwords, A
 V9: once-capital — seed-capital scenario is once-class; CLI skips when txn already present; Owner Capital not stacked by re-run (closes §B.1)
 V10: seed-layout — apply trees under `config/{bootstrap,baseline,setup,master}/`; `scenario/` = `10-seed-capital` + `20-buy` + `30-build` + `40-sell` + `45-collect` only; monoscenario `buy-sell` forbidden; per-leg delta expects; primary compose `acu apply config/` then `acu run scenario/`
 V11: mixed-ar-collect — cold single run: ACMEMFG invoice Closed; NORTHGRID Open remainder 1045; AGRISENSE Open 897; AR 11000 ending 1942; cash 10100 ending 48159 (seed 50000 − buy 4037 + collect 2196); sales 4138 COGS 1848 unchanged; warm re-run collect additive
+V12: trunk-matrix — multi-version = one trunk seed + per-host `target.yaml` + optional Default-half overlays as path args; long-running release branches (`acu-25r1`/`acu-25r2`/`acu-26r1`) not product lines; no parallel full `config/` copies per ERP version
+V13: pin-truth — committed `target.yaml` `erp` + `default_api` ! host-true from live `acu config check`; invalid Default halves (e.g. `25.100.001` when host max Default is `24.200.001`) forbidden
+V14: overlay-compose — version rewrites under `overlays/<default-half>/` (e.g. `default-24.200.001`); compose `acu apply|diff config/ overlays/<id>/` later path wins same keys
+V15: cold-apply-complete — trunk `config/` cold apply completes full tree; records that abort apply mid-tree (PaymentMethod BILL MeansOfPayment External Payment Processor → 500) drop or gate until apply-safe (closes §B.2)
+V16: matrix-evidence — multi-host validation records seed SHA × host × pin × overlay id × apply/run/diff outcomes under `reports/` (or docs template)
 
 ## §T TASKS
 
@@ -97,8 +105,19 @@ T30|x|split 40-sell → invoice-only expects (AR +4138 cash 0); drop pay steps|V
 T31|x|add 45-collect: ACMEMFG full 1196; NORTHGRID partial 1000; AGRISENSE no step; status+GL expects|V3,V11
 T32|x|acu run scenario/ cold green; acu diff config/ clean; acu state → commit trial-balance|V7,V11
 T33|x|README + walk.yaml: collect leg, open AR beat, cash 48159; drop full-collect VO|V1,V6,V11
+T34|.|README: trunk + target.yaml + overlays model; no long-running release branches as product lines|V12,V14
+T35|.|choose + document trunk branch name (main or keep acu-26r1 default until rename)|V12
+T36|.|trunk seed: drop or gate PaymentMethod BILL so cold acu apply config/ completes|V15,V7
+T37|.|add overlays/default-24.200.001 KitAssembly Type Assembly (vs Production) + document apply path|V14,V12
+T38|.|correct any committed 25r1 pin examples to host-true Default half 24.200.001|V13
+T39|.|add matrix report template/example under reports/ (seed SHA, host, pin, overlay, outcomes)|V16
+T40|.|retire plan acu-25r1 / acu-25r2 long-running branches after trunk+overlay green on lab|V12
+T41|.|README + §I: acu-cli ≥0.23.1 notes (multi-error apply, 422 fields, Bootstrap package SoT 1.4.0; drop stale project.xml docs)|V12,I.cmd
+T42|.|README: User Roles identity-seed-only (Bootstrap cold PUT not durable membership)|V8
 
 ## §B BUGS
 
 id|date|cause|fix
 B1|2026-07-24|monoscenario buy-sell re-posts seed capital each run; Owner Capital stacks N times 50k|V9
+B2|2026-08-02|PaymentMethod BILL External Payment Processor 500 aborts cold apply mid-tree on multi-host matrix|V15
+B3|2026-08-02|User Roles membership empty after Bootstrap cold PUT (demo soadmin/apadmin/aradmin drift)|-
