@@ -87,10 +87,10 @@ acu run scenario/10-seed-capital.yaml && acu state --assert-unchanged
 | `acu tenant list` | List tenants on the instance (SSH) |
 | `acu tenant delete --login TENANT --yes` | Delete tenant + recycle app pool |
 | `acu tenant recycle --yes` | Restart site app pool (free API slots / reload tenant map) |
-| `acu extract` | Inverse of apply: live tenant → `config/**` seed YAML |
+| `acu extract` | Inverse of apply: live tenant to `config/**` seed YAML |
 | `acu schema` | Dump endpoint OpenAPI into `schemas/` |
-| `acu inventory ARTIFACT` | Offline: SM203520 Settings XML ZIP / `ac.exe export xml` → `inventory/` |
-| `acu reconcile` | Offline: `inventory/` vs optional `config/` → `findings/` |
+| `acu inventory ARTIFACT` | Offline: SM203520 Settings XML ZIP / `ac.exe export xml` into `inventory/` |
+| `acu reconcile` | Offline: `inventory/` vs optional `config/` into `findings/` |
 | `make check` | E2E: create ephemeral tenant, apply, run, diff, delete |
 
 ## Pitch path
