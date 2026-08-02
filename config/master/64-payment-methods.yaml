@@ -15,12 +15,8 @@ records:
   MeansOfPayment: Direct Deposit
   UseInAP: true
   UseInAR: false
-- PaymentMethodID: BILL
-  Active: false
-  Description: Payment via BILL
-  MeansOfPayment: External Payment Processor
-  UseInAP: true
-  UseInAR: false
+# BILL (MeansOfPayment External Payment Processor) omitted: cold PUT returns
+# 500 and aborts apply mid-tree on multi-host matrix (V15, §B.2).
 - PaymentMethodID: CASH
   Active: true
   Description: Cash Payment
