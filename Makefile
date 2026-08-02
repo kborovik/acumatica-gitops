@@ -12,9 +12,9 @@ HOST ?=
 # Lab matrix cells (tab-separated). Pins: reports/matrix-pins.md
 # name	url	erp	default_api	overlay_id (empty = trunk only)
 define MATRIX_CELLS
-25r1	http://acu-25r1-dev1.vm.internal/AcumaticaERP	25.101.0153	24.200.001	default-24.200.001
-25r2	http://acu-25r2-dev1.vm.internal/AcumaticaERP	25.201.0213	25.200.001	
-26r1	http://acu-26r1-dev1.vm.internal/AcumaticaERP	26.101.0225	25.200.001	
+25r1	http://acu-25r1-dev1.vm.internal/AcumaticaERP	25.101.0153	24.200.001
+25r2	http://acu-25r2-dev1.vm.internal/AcumaticaERP	25.201.0213	25.200.001
+26r1	http://acu-26r1-dev1.vm.internal/AcumaticaERP	26.101.0225	25.200.001
 endef
 export MATRIX_CELLS
 
