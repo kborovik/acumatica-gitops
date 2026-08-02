@@ -12,10 +12,13 @@ scenario: collect
 description: Mixed AR collect (ACMEMFG full, NORTHGRID partial, AGRISENSE open)
 steps:
 # ---- collect: ACMEMFG full 1196 (COD) ---------------------------------
+# Filter is string-only (Balance decimal $filter 500s on Default endpoint).
+# orderby ReferenceNbr desc + top 1 picks newest Open after warm re-sell.
 - id: invnbr-acme
   get:
     entity: SalesInvoice
-    filter: "CustomerID eq 'ACMEMFG' and Type eq 'Invoice' and Status eq 'Open' and Balance eq 1196"
+    filter: "CustomerID eq 'ACMEMFG' and Status eq 'Open'"
+    orderby: ReferenceNbr desc
     top: 1
   capture: {ReferenceNbr: inv_acme}
 - id: pay-acme
@@ -42,7 +45,8 @@ steps:
 - id: invnbr-northgrid
   get:
     entity: SalesInvoice
-    filter: "CustomerID eq 'NORTHGRID' and Type eq 'Invoice' and Status eq 'Open' and Balance eq 2045"
+    filter: "CustomerID eq 'NORTHGRID' and Status eq 'Open'"
+    orderby: ReferenceNbr desc
     top: 1
   capture: {ReferenceNbr: inv_northgrid}
 - id: pay-northgrid
@@ -69,7 +73,8 @@ steps:
 - id: invnbr-agrisense
   get:
     entity: SalesInvoice
-    filter: "CustomerID eq 'AGRISENSE' and Type eq 'Invoice' and Status eq 'Open' and Balance eq 897"
+    filter: "CustomerID eq 'AGRISENSE' and Status eq 'Open'"
+    orderby: ReferenceNbr desc
     top: 1
   capture: {ReferenceNbr: inv_agrisense}
 expect:

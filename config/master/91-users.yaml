@@ -1,8 +1,9 @@
+# Demo users (SM201010). Role membership via Roles detail is not durable on
+# Bootstrap/1.4.0 cold PUT (live GET returns Roles: []); identity seed only.
+# SO Admin role is seeded in 90-roles.yaml for manual assign when needed.
 entity: User
 key: Username
 endpoint: bootstrap
-detail_keys:
-  Roles: Rolename
 records:
 - Username: soadmin
   FirstName: SO
@@ -11,9 +12,6 @@ records:
   IsApproved: true
   PasswordNeverExpires: true
   PasswordChangeOnNextLogin: false
-  Roles:
-  - Rolename: SO Admin
-    Selected: true
 - Username: apadmin
   FirstName: AP
   LastName: Admin
@@ -21,9 +19,6 @@ records:
   IsApproved: true
   PasswordNeverExpires: true
   PasswordChangeOnNextLogin: false
-  Roles:
-  - Rolename: AP Admin
-    Selected: true
 - Username: aradmin
   FirstName: AR
   LastName: Admin
@@ -31,6 +26,3 @@ records:
   IsApproved: true
   PasswordNeverExpires: true
   PasswordChangeOnNextLogin: false
-  Roles:
-  - Rolename: AR Admin
-    Selected: true

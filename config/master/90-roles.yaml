@@ -1,0 +1,7 @@
+# Role before User (V5). SO Admin is not a built-in system role; AP/AR Admin are.
+entity: Role
+key: Rolename
+endpoint: bootstrap
+records:
+- Rolename: SO Admin
+  Descr: Full access to SO functions and settings
