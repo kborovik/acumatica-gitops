@@ -111,7 +111,7 @@ T36|x|trunk seed: drop or gate PaymentMethod BILL so cold acu apply config/ comp
 T37|x|add overlays/default-24.200.001 KitAssembly Type Assembly (vs Production) + document apply path|V14,V12
 T38|x|correct any committed 25r1 pin examples to host-true Default half 24.200.001|V13
 T39|x|add matrix report template/example under reports/ (seed SHA, host, pin, overlay, outcomes)|V16
-T40|.|retire plan acu-25r1 / acu-25r2 long-running branches after trunk+overlay green on lab|V12
+T40|x|retire plan acu-25r1 / acu-25r2 long-running branches after trunk+overlay green on lab|V12
 T41|.|README + §I: acu-cli ≥0.23.1 notes (multi-error apply, 422 fields, Bootstrap package SoT 1.4.0; drop stale project.xml docs)|V12,I.cmd
 T42|.|README: User Roles identity-seed-only (Bootstrap cold PUT not durable membership)|V8
 

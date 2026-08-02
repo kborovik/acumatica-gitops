@@ -133,6 +133,10 @@ overlays — **not** long-running release branches as product lines
 Rename to `main` is deferred until after overlay path is green on lab hosts;
 until then, open work lands on `acu-26r1`.
 
+**Retire** long-running `acu-25r1` / `acu-25r2` after trunk+overlay is green
+on lab — plan and commands: [reports/retire-release-branches.md](reports/retire-release-branches.md).
+Do not treat those branches as product lines.
+
 | Piece | Role |
 |-------|------|
 | Trunk seed | Canonical `config/` + `scenario/` (newest supported matrix) |
