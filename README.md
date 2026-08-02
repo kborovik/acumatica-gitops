@@ -96,7 +96,8 @@ acu run scenario/10-seed-capital.yaml && acu state --assert-unchanged
 | `acu schema` | Dump endpoint OpenAPI into `schemas/` |
 | `acu inventory ARTIFACT` | Offline: SM203520 Settings XML ZIP / `ac.exe export xml` into `inventory/` |
 | `acu reconcile` | Offline: `inventory/` vs optional `config/` into `findings/` |
-| `make check` | E2E: create ephemeral tenant, apply, run, diff, delete |
+| `make check` | E2E matrix on all 3 lab Windows hosts (25r1 / 25r2 / 26r1): ephemeral tenant; bare `acu apply`/`run`/`diff` pin auto-compose overlays; delete per host |
+| `make check HOST=25r1` | Same E2E for one matrix cell only |
 
 ### CLI floor (acumatica-cli ≥ 0.23.1)
 
@@ -177,17 +178,16 @@ Pins must be **host-true** from live check (invalid Default halves forbidden).
 
 ### Overlay compose
 
-Overlays are ordinary path args after the trunk tree (later path wins same keys
-for apply/diff). No `acu apply --overlay` flag.
+Overlays live under `overlays/default-<default_api>/`. With host-true
+`target.yaml`, **bare** commands auto-compose the pin overlay (acu-cli ≥
+next release / editable with V44 pin auto). Explicit path args disable auto.
 
 ```sh
-# Config overlays (entity key merge on apply/diff)
-acu apply config/ overlays/default-24.200.001/
-acu diff config/ overlays/default-24.200.001/
+# Pin default_api: 24.200.001 → overlays/default-24.200.001/
+acu apply
+acu run
+acu diff
 
-# Scenario overlay: Default 24.200.001 needs KitAssembly Type Assembly
-# (trunk uses Production for Default 25.200.001+)
-acu run scenario/10-seed-capital.yaml scenario/20-buy.yaml \
-  overlays/default-24.200.001/scenario/30-build.yaml \
-  scenario/40-sell.yaml scenario/45-collect.yaml
+# Explicit (no auto) — later path wins same keys
+acu apply config/ overlays/default-24.200.001/
 ```
