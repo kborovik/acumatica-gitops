@@ -1,16 +1,17 @@
-# Additive sell leg: three-customer SO -> ship -> invoice -> AR WIRE pay.
+# Additive sell leg: three-customer SO -> ship -> invoice release (no AR pay).
 # Warm re-runnable (document numbers change; per-leg deltas hold).
+# AR collection is scenario/45-collect.yaml (mixed full / partial / open).
 #
 # Deltas:
 #   sales: ACMEMFG 4x EDGE 1196 + NORTHGRID 3x CELL + 2x RAIL 2045
 #     + AGRISENSE 3x EDGE 897 = 4138 revenue; COGS 7x139 + 3x195 + 2x145 = 1848
-#   all three customers pay WIRE in full -> AR 11000 net 0; cash +4138
+#   invoices released Open; AR 11000 +4138; cash 10100 +0 (no collect here)
 #   inventory: EDGE -7, CELL -3, RAIL -2
 # Requires on-hand kits from scenario/30-build.yaml (or equivalent).
 scenario: sell
-description: Sell pack (SO ship invoice collect) for ACMEMFG NORTHGRID AGRISENSE
+description: Sell pack (SO ship invoice) for ACMEMFG NORTHGRID AGRISENSE
 steps:
-# ---- sell: ACMEMFG (pays in full) ------------------------------------
+# ---- sell: ACMEMFG (COD; collect in 45-collect) -----------------------
 - id: so-acme
   put: SalesOrder
   record:
@@ -55,27 +56,7 @@ steps:
     entity: SalesInvoice
     keys: [Invoice, "${inv_acme}"]
     until: {Status: Open}
-- id: pay-acme
-  put: Payment
-  record:
-    Type: Payment
-    CustomerID: ACMEMFG
-    PaymentMethod: WIRE
-    CashAccount: '10100'
-    PaymentAmount: 1196.00
-    PaymentRef: "WIRE-${inv_acme}"
-    Hold: false
-    DocumentsToApply:
-    - {DocType: Invoice, ReferenceNbr: "${inv_acme}", AmountPaid: 1196.00}
-  capture: {ReferenceNbr: pmt_acme}
-- id: release-pay-acme
-  action: {entity: Payment, name: ReleasePayment}
-  record: {Type: Payment, ReferenceNbr: "${pmt_acme}"}
-  wait:
-    entity: Payment
-    keys: [Payment, "${pmt_acme}"]
-    until: {Status: Closed}
-# ---- sell: NORTHGRID (pays in full) ----------------------------------
+# ---- sell: NORTHGRID (NET30; collect partial in 45-collect) -----------
 - id: so-northgrid
   put: SalesOrder
   record:
@@ -121,27 +102,7 @@ steps:
     entity: SalesInvoice
     keys: [Invoice, "${inv_northgrid}"]
     until: {Status: Open}
-- id: pay-northgrid
-  put: Payment
-  record:
-    Type: Payment
-    CustomerID: NORTHGRID
-    PaymentMethod: WIRE
-    CashAccount: '10100'
-    PaymentAmount: 2045.00
-    PaymentRef: "WIRE-${inv_northgrid}"
-    Hold: false
-    DocumentsToApply:
-    - {DocType: Invoice, ReferenceNbr: "${inv_northgrid}", AmountPaid: 2045.00}
-  capture: {ReferenceNbr: pmt_northgrid}
-- id: release-pay-northgrid
-  action: {entity: Payment, name: ReleasePayment}
-  record: {Type: Payment, ReferenceNbr: "${pmt_northgrid}"}
-  wait:
-    entity: Payment
-    keys: [Payment, "${pmt_northgrid}"]
-    until: {Status: Closed}
-# ---- sell: AGRISENSE (pays in full) ----------------------------------
+# ---- sell: AGRISENSE (NET30; leave open — no collect step) ------------
 - id: so-agrisense
   put: SalesOrder
   record:
@@ -186,57 +147,22 @@ steps:
     entity: SalesInvoice
     keys: [Invoice, "${inv_agrisense}"]
     until: {Status: Open}
-- id: pay-agrisense
-  put: Payment
-  record:
-    Type: Payment
-    CustomerID: AGRISENSE
-    PaymentMethod: WIRE
-    CashAccount: '10100'
-    PaymentAmount: 897.00
-    PaymentRef: "WIRE-${inv_agrisense}"
-    Hold: false
-    DocumentsToApply:
-    - {DocType: Invoice, ReferenceNbr: "${inv_agrisense}", AmountPaid: 897.00}
-  capture: {ReferenceNbr: pmt_agrisense}
-- id: release-pay-agrisense
-  action: {entity: Payment, name: ReleasePayment}
-  record: {Type: Payment, ReferenceNbr: "${pmt_agrisense}"}
-  wait:
-    entity: Payment
-    keys: [Payment, "${pmt_agrisense}"]
-    until: {Status: Closed}
 expect:
 - get:
     entity: SalesInvoice
     keys: [Invoice, "${inv_acme}"]
   fields:
-    Status: Closed
-- get:
-    entity: Payment
-    keys: [Payment, "${pmt_acme}"]
-  fields:
-    Status: Closed
+    Status: Open
 - get:
     entity: SalesInvoice
     keys: [Invoice, "${inv_northgrid}"]
   fields:
-    Status: Closed
-- get:
-    entity: Payment
-    keys: [Payment, "${pmt_northgrid}"]
-  fields:
-    Status: Closed
+    Status: Open
 - get:
     entity: SalesInvoice
     keys: [Invoice, "${inv_agrisense}"]
   fields:
-    Status: Closed
-- get:
-    entity: Payment
-    keys: [Payment, "${pmt_agrisense}"]
-  fields:
-    Status: Closed
+    Status: Open
 - inquire: InventorySummaryInquiry
   parameters: {InventoryID: GW-EDGE, WarehouseID: WH01}
   delta: {QtyOnHand: -7.0}
@@ -257,8 +183,8 @@ expect:
 - inquire: AccountSummaryInquiry
   parameters: {Ledger: ACTUAL, Period: "${current_period}"}
   match: {Account: '11000'}
-  delta: {EndingBalance: 0.00}
+  delta: {EndingBalance: 4138.00}
 - inquire: AccountSummaryInquiry
   parameters: {Ledger: ACTUAL, Period: "${current_period}"}
   match: {Account: '10100'}
-  delta: {EndingBalance: 4138.00}
+  delta: {EndingBalance: 0.00}
