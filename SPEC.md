@@ -2,16 +2,16 @@
 
 ## §G GOAL
 
-Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca sales-video pitch (Demo Tenant Factory): empty → config + linked txn history; clean `acu diff config/` after apply+run.
+Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca sales-video pitch (Demo Tenant Factory): empty → config + linked txn history; clean `acu diff config/` after apply+run. Pitch shows mixed AR (closed + open balances), not only fully collected cash.
 
 ## §C CONSTRAINTS
 
-- Industry flavor: electronics manufacturing (stock inventory, seed capital, PO → bill → pay, kit assembly, SO → ship → invoice → payment).
+- Industry flavor: electronics manufacturing (stock inventory, seed capital, PO → bill → pay, kit assembly, SO → ship → invoice → collect full | partial | open per customer policy).
 - Company display name: LAB5 Electronics Inc. (Acumatica org); pitch surface lab5.ca Demo Tenant Factory.
 - Seed lives in Git as acu YAML (`config/{bootstrap,baseline,setup,master}/`, `scenario/`); no secrets in YAML — creds stay `.env`.
 - Target matrix: `target.yaml` (erp 26.101.0225, default_api 25.200.001); tenant id from env (`ACU_TENANT=LAB5`).
 - Demo data only; not production cutover / not multi-industry catalog this pass.
-- Apply trees under `config/`; linked history under `scenario/` lifecycle files (once seed + additive buy/build/sell); not rename-only scaffold.
+- Apply trees under `config/`; linked history under `scenario/` lifecycle files (once seed + additive buy/build/sell/collect); not rename-only scaffold.
 - Demo SO login: user `soadmin` w/ role `SO Admin` (descr Full access to SO functions and settings); password ! in Git.
 - Demo AP login: user `apadmin` w/ built-in role `AP Admin`; password ! in Git.
 - Demo AR login: user `aradmin` w/ built-in role `AR Admin`; password ! in Git.
@@ -31,7 +31,7 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - cmd: `acu inventory ARTIFACT` → offline SM203520 XML or ac.exe export xml → inventory/
 - cmd: `acu reconcile` → offline inventory/ vs ?config/ → findings/
 - cmd: `acu schema` → dump OpenAPI → schemas/
-- yaml: `config/bootstrap/*.yaml` → company, features, credit terms (bootstrap endpoint)
+- yaml: `config/bootstrap/*.yaml` → company, features, credit terms NET30 + COD (bootstrap endpoint)
 - yaml: `config/bootstrap/project.xml` → Bootstrap/1.3.0 contract (Role/User/NumberingSequence + *Preferences depth; acu config init source)
 - yaml: `config/baseline/*.yaml` → GL/subaccount/UOM foundation (Default + bootstrap endpoints)
 - yaml: `config/setup/*.yaml` → fin year, master calendar, open periods (actions)
@@ -40,7 +40,8 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - yaml: `scenario/10-seed-capital.yaml` → once-class owner capital JE (Dr 10100 / Cr 30000)
 - yaml: `scenario/20-buy.yaml` → additive component PO → receipt → bill → AP pay (four vendors)
 - yaml: `scenario/30-build.yaml` → additive kit assembly (parts → GW kits)
-- yaml: `scenario/40-sell.yaml` → additive SO → ship → invoice → AR pay (three-customer pack)
+- yaml: `scenario/40-sell.yaml` → additive SO → ship → invoice release (three-customer pack; no AR pay)
+- yaml: `scenario/45-collect.yaml` → additive AR collect: ACMEMFG full 1196; NORTHGRID partial 1000; AGRISENSE open
 - yaml: `state/*.yaml` → committed derived observations (acu state output)
 - yaml: `target.yaml` → erp + default_api pin (API version when --api-version absent)
 - env: `ACU_BASE_URL`, `ACU_TENANT`, `ACU_USER`, `ACU_PASSWORD` ! set for live apply; `ACU_SSH` ? (default Administrator@host; blank = hosted); no ACU_API_VERSION
@@ -50,14 +51,15 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 
 V1: demo-tenant-seed — artifact is Git-versioned Acumatica seed for rebuildable LAB5 Electronics Inc. manufacturer demo (lab5.ca pitch); not production ERP
 V2: company-identity — org display name always `LAB5 Electronics Inc.`; org CD consistent across company, ledger-company, open-periods
-V3: linked-history — every demo doc chains: customer/vendor → order → shipment/receipt → invoice/bill → payment; orphan demo docs forbidden
+V3: linked-history — every demo doc chains customer/vendor → order → shipment/receipt → invoice/bill; payment when scenario asserts collection; open AR invoices allowed under mixed-ar collect policy; orphan demo docs forbidden
 V4: feature-closure — `config/bootstrap/features.yaml` enables every feature config/master/scenario YAML requires
 V5: apply-order — numbered YAML prefixes under `config/` encode alphabetical apply order; record referencing entity sorts after file creating it
-V6: pitch-surface — seed populates manufacturer pitch path: seed capital, component buy+pay, kit assembly, kit qty, SO, shipment, invoice, customer payment (all closed) on standard screens
+V6: pitch-surface — seed populates manufacturer pitch path: seed capital, component buy+pay, kit assembly, kit qty, SO, shipment, invoice, mixed AR collect (full + partial + open) on standard screens
 V7: deterministic-rebuild — empty/reset tenant + `acu apply config/` + `acu run scenario/` → clean `acu diff config/`
 V8: no-secrets-in-seed — seed YAML + committed docs never contain passwords, API keys, host credentials
 V9: once-capital — seed-capital scenario is once-class; CLI skips when txn already present; Owner Capital not stacked by re-run (closes §B.1)
-V10: seed-layout — apply trees under `config/{bootstrap,baseline,setup,master}/`; `scenario/` = `10-seed-capital` + `20-buy` + `30-build` + `40-sell` only; monoscenario `buy-sell` forbidden; per-leg delta expects; primary compose `acu apply config/` then `acu run scenario/`
+V10: seed-layout — apply trees under `config/{bootstrap,baseline,setup,master}/`; `scenario/` = `10-seed-capital` + `20-buy` + `30-build` + `40-sell` + `45-collect` only; monoscenario `buy-sell` forbidden; per-leg delta expects; primary compose `acu apply config/` then `acu run scenario/`
+V11: mixed-ar-collect — cold single run: ACMEMFG invoice Closed; NORTHGRID Open remainder 1045; AGRISENSE Open 897; AR 11000 ending 1942; cash 10100 ending 48159 (seed 50000 − buy 4037 + collect 2196); sales 4138 COGS 1848 unchanged; warm re-run collect additive
 
 ## §T TASKS
 
@@ -89,6 +91,12 @@ T24|x|seed User aradmin + membership built-in AR Admin; password ! committed|V5,
 T25|x|sync config/bootstrap/project.xml ← acu-cli Bootstrap/1.3.0 (config init source; Role/User/NumberingSequence + prefs depth)|V4,V7,I.yaml
 T26|x|seed config/master/05-numbering-sequences.yaml NumberingSequence bootstrap; before prefs that cite *NumberingID|V5,T25
 T27|x|deepen master *Preferences YAML to 1.3.0 field depth (acu-cli template parity)|V4,T25,T26
+T28|x|SPEC fold mixed-ar: V3/V6/V10 amend + V11; §I 40-sell vs 45-collect; §C collect policy|V3,V6,V10,V11
+T29|.|config: CreditTerms COD; ACMEMFG Terms COD; NORTHGRID+AGRISENSE stay NET30|V5,V11
+T30|.|split 40-sell → invoice-only expects (AR +4138 cash 0); drop pay steps|V3,V6,V10
+T31|.|add 45-collect: ACMEMFG full 1196; NORTHGRID partial 1000; AGRISENSE no step; status+GL expects|V3,V11
+T32|.|acu run scenario/ cold green; acu diff config/ clean; acu state → commit trial-balance|V7,V11
+T33|.|README + walk.yaml: collect leg, open AR beat, cash 48159; drop full-collect VO|V1,V6,V11
 
 ## §B BUGS
 
