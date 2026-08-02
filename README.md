@@ -129,11 +129,23 @@ full product: `make demo` ensures CLI replay logs, drives every beat, and writes
 stills plus `demo/out/video/walk.webm`.
 Cold reshoot: `make demo-clean && make demo`.
 
+## Demo users (identity seed only)
+
+`config/master/90-roles.yaml` seeds custom role **SO Admin**.
+`config/master/91-users.yaml` seeds demo users `soadmin`, `apadmin`, `aradmin`
+(passwords are demo-only and may be committed per §C).
+
+**Role membership is not durable on Bootstrap cold PUT** (live GET returns
+empty `Roles: []` after apply — §B.3). Treat User/Role YAML as **identity
+seed only**: create the logins; assign SO/AP/AR Admin membership in the UI
+(or a later durable path) when the pitch needs those screens.
+
 ## Non-goals
 
 - Production cutover / opening balances from a legacy system
 - Multi-industry catalog (this seed is IoT gateway manufacturing / kit assembly)
-- Secrets or host credentials in Git (`V8`)
+- Secrets or host credentials in Git (`V8`) — demo user passwords are the
+  documented exception for local pitch logins
 
 ## Target matrix (trunk + pins + overlays)
 

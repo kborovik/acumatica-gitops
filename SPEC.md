@@ -113,7 +113,7 @@ T38|x|correct any committed 25r1 pin examples to host-true Default half 24.200.0
 T39|x|add matrix report template/example under reports/ (seed SHA, host, pin, overlay, outcomes)|V16
 T40|x|retire plan acu-25r1 / acu-25r2 long-running branches after trunk+overlay green on lab|V12
 T41|x|README + §I: acu-cli ≥0.23.1 notes (multi-error apply, 422 fields, Bootstrap package SoT 1.4.0; drop stale project.xml docs)|V12,I.cmd
-T42|.|README: User Roles identity-seed-only (Bootstrap cold PUT not durable membership)|V8
+T42|x|README: User Roles identity-seed-only (Bootstrap cold PUT not durable membership)|V8
 
 ## §B BUGS
 
