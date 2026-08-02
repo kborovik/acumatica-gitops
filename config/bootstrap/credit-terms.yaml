@@ -2,6 +2,13 @@ entity: CreditTerms
 key: TermsID
 endpoint: bootstrap
 records:
+- TermsID: COD
+  DayDue00: 0
+  Descr: Cash on Delivery
+  DiscPercent: 0.0
+  DiscType: Fixed Number of Days
+  DueType: Fixed Number of Days
+  VisibleTo: All
 - TermsID: NET30
   DayDue00: 30
   Descr: Net 30 Days

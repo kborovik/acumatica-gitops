@@ -4,6 +4,7 @@ records:
 - CustomerID: ACMEMFG
   CustomerClass: B2B
   CustomerName: Acme Manufacturing
+  Terms: COD
   MainContact:
     Address:
       AddressLine1: 500 Industrial Parkway
@@ -22,6 +23,7 @@ records:
 - CustomerID: AGRISENSE
   CustomerClass: B2B
   CustomerName: AgriSense Farms
+  Terms: NET30
   MainContact:
     Address:
       AddressLine1: 8800 Heartland Highway
@@ -94,6 +96,7 @@ records:
 - CustomerID: NORTHGRID
   CustomerClass: B2B
   CustomerName: NorthGrid Utilities
+  Terms: NET30
   MainContact:
     Address:
       AddressLine1: 100 Powerline Road
