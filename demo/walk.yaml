@@ -1,9 +1,11 @@
 # acu-walk script — LAB5 Electronics Inc. manufacturer demo pitch (lab5.ca).
 # Narrative:
 #   problem → empty tenant → apply masters → seed capital
-#   → buy / build / sell legs → cash position → clean diff.
-# Drivers: config/** (bootstrap/baseline/setup/master) + scenario/10,20,30,40
+#   → buy / build / sell / collect legs → mixed AR + cash → clean diff.
+# Drivers: config/** (bootstrap/baseline/setup/master) + scenario/10,20,30,40,45
 #   + config/views/** (state observations). Not a cutover pack film.
+# Cold ending (V11): cash 48159; AR 1942 (ACME Closed, NORTHGRID rem 1045,
+#   AGRISENSE open 897); sales 4138 COGS 1848.
 # Credentials from workspace .env (same as `acu`):
 #   ACU_BASE_URL, ACU_USER, ACU_PASSWORD  (required for live ops)
 # Optional acu-channel only: ACU_TENANT (not a walk-target source)
@@ -32,7 +34,8 @@ settings:
 
     Demo Tenant Factory path shown end-to-end:
     • Tenant create (empty) + GitOps apply (COA, warehouse, items, parties)
-    • Once-class owner capital, then buy / build / sell scenarios
+    • Once-class owner capital, then buy / build / sell / mixed collect
+    • Open AR + partial payment on the books — not only fully collected cash
     • Clean configuration diff vs the repo
 
     Built for partner demos and prospect-specific rebuilds — same tree,
@@ -75,6 +78,11 @@ cli:
     when: interleaved
   sell:
     argv: ["acu", "run", "scenario/40-sell.yaml"]
+    tenant_flag: true
+    write: true
+    when: interleaved
+  collect:
+    argv: ["acu", "run", "scenario/45-collect.yaml"]
     tenant_flag: true
     write: true
     when: interleaved
@@ -207,7 +215,7 @@ beats:
       no sales, no inventory. Day one.
 
   # ===========================================================================
-  # ACT 4 — BUY   (leg 1 of 3: run one scenario, then show what it changed)
+  # ACT 4 — BUY   (leg 1 of 4: run one scenario, then show what it changed)
   # ===========================================================================
 
   # Driver: scenario/20-buy.yaml. 16 documents across 4 vendor chains.
@@ -258,7 +266,7 @@ beats:
   #   seed capital (GL, once) → Checking 10100
   #   vendor → PO → receipt → bill → AP WIRE payment
   #   kit assembly (parts → GW-EDGE / CELL / RAIL) at WH01 MAIN
-  #   customer → SO → shipment → invoice → AR WIRE payment
+  #   customer → SO → shipment → invoice → mixed AR collect
   # via ${po_*} ${rcpt_*} ${bill_*} ${chk_*} ${asm_*} ${ship_*} ${inv_*}
   - id: "10-bill-detail"
     screen: AP301000
@@ -279,7 +287,7 @@ beats:
       the capital funded.
 
   # ===========================================================================
-  # ACT 5 — BUILD   (leg 2 of 3)
+  # ACT 5 — BUILD   (leg 2 of 4)
   # ===========================================================================
 
   # Driver: scenario/30-build.yaml; specs config/master/85-kit-specifications.yaml
@@ -315,25 +323,23 @@ beats:
       parts that came in, ready to ship.
 
   # ===========================================================================
-  # ACT 6 — SELL   (leg 3 of 3; lands the 32-document total and "it checks")
+  # ACT 6 — SELL   (leg 3 of 4: SO → ship → invoice only; collect is leg 4)
   # ===========================================================================
 
-  # Driver: scenario/40-sell.yaml. 12 documents — note shipments and invoices
-  # come from ACTIONS (SalesOrderCreateShipment / PrepareInvoice), not puts.
+  # Driver: scenario/40-sell.yaml. 9 documents — shipments and invoices from
+  # ACTIONS (SalesOrderCreateShipment / PrepareInvoice), not puts. No AR pay.
   - id: "15-cli-sell"
     cli: sell
     backdrop: SO3010PL
     speed: 40
     max_lines: 400
     vo: >
-      Third leg: sell. Twelve more documents — order, shipment, invoice,
-      payment, for each of three customers. Thirty-two linked documents in one
-      cycle. And every leg checks its own inventory and ledger movement against
-      a snapshot taken before the run. It doesn't just execute. It checks.
+      Third leg: sell. Nine documents — order, shipment, invoice for each of
+      three customers. Revenue and open AR land; collection is a separate leg.
+      Every leg still checks inventory and ledger deltas against a pre-run
+      snapshot. It doesn't just execute. It checks.
 
-  # Camera: 3 orders, 3 of 3 rows — box the TOP row only (AgriSense, 000003),
-  # which also parks the badge on the column headers rather than on data.
-  # Customers: config/master/76-customers.yaml
+  # Camera: 3 orders. Customers: config/master/76-customers.yaml
   - id: "16-sales-orders"
     screen: SO3010PL
     highlight: ["AGRISENSE"]
@@ -352,41 +358,67 @@ beats:
     vo: >
       Shipped and confirmed out of the warehouse. Stock is off the shelf.
 
-  # By the time this films the leg is complete: invoices are Closed and AR
-  # (11000) is back to zero. Do not invite the viewer to look for an open AR.
+  # After sell (before collect): all three invoices Open; AR +4138. Mixed
+  # collect is the next leg — do not claim full collection here.
   - id: "18-invoices"
     screen: SO3030PL
-    highlight: ["AGRISENSE"]
+    highlight: ["Open"]
     row: true
     label: "ReleaseSalesInvoice"
     vo: >
-      Invoiced and released. Revenue on the books — and already collected by
-      the time the leg finished.
+      Invoiced and released — still open. Four thousand one hundred thirty-eight
+      on accounts receivable. Collection is policy, not a free ride to zero.
 
-  - id: "19-ar-payments"
-    screen: AR3020PL
-    highlight: ["AGRISENSE"]
-    row: true
-    label: "AR WIRE"
+  # ===========================================================================
+  # ACT 6b — COLLECT   (leg 4 of 4; mixed AR: full / partial / open)
+  # ===========================================================================
+
+  # Driver: scenario/45-collect.yaml. ACMEMFG COD full 1196; NORTHGRID partial
+  # 1000 (remainder 1045); AGRISENSE no payment (open 897).
+  - id: "19-cli-collect"
+    cli: collect
+    backdrop: AR3020PL
+    speed: 40
+    max_lines: 400
     vo: >
-      And back the money comes. All three customers paid in full, by wire,
-      into the same checking account. Nothing outstanding.
+      Fourth leg: collect. Not every customer pays the same way. Acme is COD —
+      paid in full. NorthGrid wires a partial thousand. AgriSense stays open
+      on net thirty. Real AR, not a demo that always nets to zero.
+
+  - id: "19b-ar-payments"
+    screen: AR3020PL
+    highlight: ["WIRE"]
+    row: true
+    label: "mixed AR WIRE"
+    vo: >
+      Two wires in — Acme closed, NorthGrid partial. AgriSense never appears
+      on the payment list. Open balances are the point of the pitch.
+
+  - id: "19c-open-ar"
+    screen: SO3030PL
+    highlight: ["Open"]
+    row: true
+    label: "open AR remainder"
+    vo: >
+      Two invoices still open. NorthGrid owes one thousand forty-five.
+      AgriSense eight hundred ninety-seven. Accounts receivable ends at
+      one thousand nine hundred forty-two.
 
   # ===========================================================================
   # ACT 7 — EVIDENCE
   # ===========================================================================
 
-  # THE LANDING. Numbers are canonical (see the block up top) and cold-run only.
+  # THE LANDING. Numbers are canonical (header V11) and cold-run only.
   - id: "20-cash-position"
     screen: GL401000
     highlight: ["Checking Account"]
     row: true
     label: "cash position"
     vo: >
-      Full circuit. Fifty thousand in. Four thousand thirty-seven out to
-      suppliers. Four thousand one hundred thirty-eight back from customers.
-      Checking lands at fifty thousand one hundred and one. Whatever screen
-      the prospect asks for, there's a document behind it.
+      Full circuit with mixed collect. Fifty thousand in. Four thousand
+      thirty-seven out to suppliers. Two thousand one hundred ninety-six back
+      from customers. Checking lands at forty-eight thousand one hundred
+      fifty-nine — and AR still shows real open work.
 
   # ===========================================================================
   # ACT 8 — PROOF

@@ -20,7 +20,8 @@ Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acum
 | `scenario/10-seed-capital.yaml` | Once-class owner capital JE (CLI skip-if-present when present) |
 | `scenario/20-buy.yaml` | Additive component PO to receipt to bill to AP pay (four vendors) |
 | `scenario/30-build.yaml` | Additive kit assembly (parts to GW-EDGE / CELL / RAIL) |
-| `scenario/40-sell.yaml` | Additive SO to ship to invoice to AR pay (three customers) |
+| `scenario/40-sell.yaml` | Additive SO to ship to invoice (three customers; no AR pay) |
+| `scenario/45-collect.yaml` | Additive mixed AR collect: ACMEMFG full, NORTHGRID partial, AGRISENSE open |
 | `state/` | Committed derived observations (`acu state` from `config/views/`) |
 | `demo/` | Everything for the sales video: shooting script, screen↔seed map, scripted GUI walk |
 | `SPEC.md` | Spec-driven design (goal, invariants, tasks) |
@@ -51,7 +52,7 @@ acu tenant create --login TENANT
 acu apply config/
 # bare `acu apply` also prefers config/ when those trees exist
 
-# 4. Linked history for the pitch (once capital, then buy/build/sell)
+# 4. Linked history for the pitch (once capital, then buy/build/sell/collect)
 acu run scenario/
 # bare `acu run` defaults to scenario/
 
@@ -70,7 +71,8 @@ acu state
 | `10-seed-capital.yaml` | **once** | CLI skips when capital JE already present; Owner Capital stays 50k (not stacked) |
 | `20-buy.yaml` | additive | New component PO/receipt/bill/pay each run; part and cash deltas hold |
 | `30-build.yaml` | additive | New kit assemblies each run; parts to kits deltas hold |
-| `40-sell.yaml` | additive | New SO/ship/invoice/pay pack each run; deltas hold |
+| `40-sell.yaml` | additive | New SO/ship/invoice pack each run; AR +4138, cash 0; deltas hold |
+| `45-collect.yaml` | additive | Mixed AR: ACMEMFG full 1196, NORTHGRID partial 1000, AGRISENSE open; cash +2196 |
 
 Primary compose: `acu apply config/` then `acu run scenario/`.
 
@@ -103,7 +105,9 @@ Short version:
 2. Bank funded (Owner Capital to Checking 10100)
 3. Components at **WH01** after the buy; four vendor bills paid by WIRE
 4. Kit assembly (parts to finished gateways)
-5. Sales order, shipment, invoice, WIRE payment (all three customers paid)
+5. Sales order, shipment, invoice (three customers; invoices left Open)
+6. Mixed AR collect: ACMEMFG COD full, NORTHGRID partial, AGRISENSE open
+7. Cold ending: cash **48159**, AR **1942** (not fully collected)
 
 The walk itself is scripted — see [demo/](demo/README.md).
 One command captures the
