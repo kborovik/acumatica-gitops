@@ -6,16 +6,17 @@ Rebuild from empty to company, masters, and linked transaction history
 (seed capital, buy components, assemble products, sell, invoice, collect).
 Not a production ERP.
 
-Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acumatica-cli`).
+Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acumatica-cli`)
+**≥ 0.23.1**.
 
 ## Layout
 
 | Path | Role |
 |------|------|
-| `config/bootstrap/` | Company, features, credit terms, Bootstrap endpoint contract (`project.xml`) |
+| `config/bootstrap/` | Company, features, credit terms (Bootstrap REST package is CLI SoT 1.4.0+) |
 | `config/baseline/` | GL foundation (COA, ledger, subaccounts, UOMs) |
 | `config/setup/` | Financial year, master calendar, open periods |
-| `config/master/` | Inventory, warehouse, items, vendors, customers, module prefs |
+| `config/master/` | Inventory, warehouse, items, vendors, customers, module prefs, roles, users |
 | `config/views/` | Observation defs for `acu state` (trial balance); not seed |
 | `scenario/10-seed-capital.yaml` | Once-class owner capital JE (CLI skip-if-present when present) |
 | `scenario/20-buy.yaml` | Additive component PO to receipt to bill to AP pay (four vendors) |
@@ -96,6 +97,17 @@ acu run scenario/10-seed-capital.yaml && acu state --assert-unchanged
 | `acu inventory ARTIFACT` | Offline: SM203520 Settings XML ZIP / `ac.exe export xml` into `inventory/` |
 | `acu reconcile` | Offline: `inventory/` vs optional `config/` into `findings/` |
 | `make check` | E2E: create ephemeral tenant, apply, run, diff, delete |
+
+### CLI floor (acumatica-cli ≥ 0.23.1)
+
+| Capability | Why it matters here |
+|------------|---------------------|
+| Apply multi-error + continue | One failed PUT does not stop the tree; exit 1 with full summary (never silent partial) |
+| 422 field errors | Actionable field-level REST errors on bad seed rows |
+| Bootstrap package SoT **1.4.0+** | `acu bootstrap` / tenant create publish package from CLI; data-repo does **not** carry `project.xml` as seed |
+
+Sibling CLI matrix notes: [acu-cli multi-host matrix](https://github.com/kborovik/acu-cli#multi-host-matrix-v44)
+and [acu-cli#29](https://github.com/kborovik/acu-cli/issues/29).
 
 ## Pitch path
 
