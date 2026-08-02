@@ -109,7 +109,7 @@ T34|x|README: trunk + target.yaml + overlays model; no long-running release bran
 T35|x|choose + document trunk branch name (main or keep acu-26r1 default until rename)|V12
 T36|x|trunk seed: drop or gate PaymentMethod BILL so cold acu apply config/ completes|V15,V7
 T37|x|add overlays/default-24.200.001 KitAssembly Type Assembly (vs Production) + document apply path|V14,V12
-T38|.|correct any committed 25r1 pin examples to host-true Default half 24.200.001|V13
+T38|x|correct any committed 25r1 pin examples to host-true Default half 24.200.001|V13
 T39|.|add matrix report template/example under reports/ (seed SHA, host, pin, overlay, outcomes)|V16
 T40|.|retire plan acu-25r1 / acu-25r2 long-running branches after trunk+overlay green on lab|V12
 T41|.|README + §I: acu-cli ≥0.23.1 notes (multi-error apply, 422 fields, Bootstrap package SoT 1.4.0; drop stale project.xml docs)|V12,I.cmd
