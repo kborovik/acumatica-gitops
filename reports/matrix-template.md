@@ -12,8 +12,10 @@ Fill every field after a cold or warm validation pass.
 | Seed SHA | `git rev-parse HEAD` |
 | Host | (hostname / base URL) |
 | Tenant | |
-| ERP (`target.yaml` erp) | |
+| Matrix cell id | |
+| ERP (`matrix.yaml` cell erp) | |
 | Default API (`default_api`) | |
+| REST where (`base_url`) | |
 | Overlay id | `none` \| `default-24.200.001` \| … |
 | CLI version | `acu --version` |
 | Mode | cold empty tenant \| warm re-run |

@@ -44,7 +44,7 @@ and pre-overlay). Re-run after trunk fixes and attach a new dated report.
 | ERP | 26.101.0225 |
 | Default API | 25.200.001 |
 | Overlay | none |
-| Notes | Current `target.yaml` on `acu-26r1` |
+| Notes | Now committed as matrix cell `26r1` (default) |
 
 ## Pin table
 

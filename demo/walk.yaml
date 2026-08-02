@@ -7,7 +7,7 @@
 # Cold ending (V11): cash 48159; AR 1942 (ACME Closed, NORTHGRID rem 1045,
 #   AGRISENSE open 897); sales 4138 COGS 1848.
 # Credentials from workspace .env (same as `acu`):
-#   ACU_BASE_URL, ACU_USER, ACU_PASSWORD  (required for live ops)
+#   ACU_USER, ACU_PASSWORD required; ACU_BASE_URL optional when matrix.yaml cell carries base_url
 # Optional acu-channel only: ACU_TENANT (not a walk-target source)
 # Walk target: settings.tenant_name (default DEMO); tenant_id optional for browser only
 # Resolve: --tenant-name > settings > DEMO

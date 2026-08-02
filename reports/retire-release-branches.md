@@ -3,7 +3,7 @@
 ## Goal
 
 Stop using `acu-25r1` / `acu-25r2` / (later) rename-away `acu-26r1` as
-**product lines**. Multi-version = trunk seed + `target.yaml` + overlays.
+**product lines**. Multi-version = trunk seed + multi-cell `matrix.yaml` + overlays.
 
 ## Preconditions (gate before delete)
 

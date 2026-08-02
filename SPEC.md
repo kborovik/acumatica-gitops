@@ -9,25 +9,26 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - Industry flavor: electronics manufacturing (stock inventory, seed capital, PO → bill → pay, kit assembly, SO → ship → invoice → collect full | partial | open per customer policy).
 - Company display name: LAB5 Electronics Inc. (Acumatica org); pitch surface lab5.ca Demo Tenant Factory.
 - Seed lives in Git as acu YAML (`config/{bootstrap,baseline,setup,master}/`, `scenario/`); no secrets in YAML — creds stay `.env`.
-- Target matrix: `target.yaml` (erp 26.101.0225, default_api 25.200.001); tenant id from env (`ACU_TENANT=LAB5`).
+- Target matrix: committed `matrix.yaml` cells (default cell 26r1: erp 26.101.0225, default_api 25.200.001 + base_url); tenant id from env (`ACU_TENANT=LAB5`).
 - Demo data only; not production cutover / not multi-industry catalog this pass.
 - Apply trees under `config/`; linked history under `scenario/` lifecycle files (once seed + additive buy/build/sell/collect); not rename-only scaffold.
 - Demo SO login: user `soadmin` w/ role `SO Admin` (descr Full access to SO functions and settings); password ! in Git.
 - Demo AP login: user `apadmin` w/ built-in role `AP Admin`; password ! in Git.
 - Demo AR login: user `aradmin` w/ built-in role `AR Admin`; password ! in Git.
-- Multi-version: one trunk seed + per-host `target.yaml` + optional Default-half overlays; long-running release branches not product lines
-- CLI floor: acumatica-cli ≥ 0.23.1 (apply multi-error, 422 field errors, Bootstrap package SoT 1.4.0)
+- Multi-version: one trunk seed + multi-cell `matrix.yaml` + optional Default-half overlays; long-running release branches not product lines; never `target.yaml`
+- CLI floor: acumatica-cli ≥ 0.24.0 (matrix.yaml pin+where, bare pin auto-compose, acu check lifecycle, apply multi-error, 422 field errors, Bootstrap package SoT 1.4.0)
 
 ## §I INTERFACES
 
-- cmd: `acu config check` → read-only preflight (.env, target.yaml, REST, ?SSH)
+- cmd: `acu config check` → read-only preflight (.env, matrix.yaml, REST, ?SSH)
+- cmd: `acu check [--all] [--yes]` → cold matrix lifecycle delete→create→apply→run→diff→delete per cell; requires matrix+SSH+tenant
 - cmd: `acu tenant create --login NAME` → create + bootstrap (SSH); re-run republishes; --id optional (omit = next free)
 - cmd: `acu tenant delete --login NAME [--yes]` → delete + recycle app pool (SSH); --id alt
 - cmd: `acu tenant list|recycle` → list tenants / app-pool recycle (SSH)
 - cmd: `acu bootstrap` → publish AcuBootstrap (REST package SoT 1.4.0+); `--export PATH` offline zip; data-repo `project.xml` not seed
-- cmd: `acu apply [paths…]` → PUT/actions trees; path args may append overlay dirs (later wins same keys); per-record continue + multi-error exit 1 (never silent partial); bare prefers config/
-- cmd: `acu run [scenario/]` → ordered scenario YAMLs; once-class skip-if-present; bare defaults scenario/
-- cmd: `acu diff [paths…]` → drift vs live; same path-arg compose as apply; exit 2 on drift; bare prefers config/
+- cmd: `acu apply [paths…]` → PUT/actions trees; path args may append overlay dirs (later wins same keys); per-record continue + multi-error exit 1 (never silent partial); bare prefers config/ + pin overlay auto
+- cmd: `acu run [scenario/]` → ordered scenario YAMLs; once-class skip-if-present; bare defaults scenario/ + pin overlay basename replace
+- cmd: `acu diff [paths…]` → drift vs live; same path-arg compose as apply; exit 2 on drift; bare prefers config/ + pin overlay auto
 - cmd: `acu state` → capture config/views/ → state/; `--assert-unchanged` exit 2 when moved
 - cmd: `acu extract` → live tenant → config/{bootstrap,baseline,setup,master}/ (inverse apply)
 - cmd: `acu inventory ARTIFACT` → offline SM203520 XML or ac.exe export xml → inventory/
@@ -46,8 +47,8 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - yaml: `scenario/45-collect.yaml` → additive AR collect: ACMEMFG full 1196; NORTHGRID partial 1000; AGRISENSE open
 - yaml: `state/*.yaml` → committed derived observations (acu state output)
 - yaml: `reports/*` → multi-host matrix evidence (seed SHA × host × pin × overlay × outcomes); not seed
-- yaml: `target.yaml` → erp + default_api pin (API version when --api-version absent); host-true from live check
-- env: `ACU_BASE_URL`, `ACU_TENANT`, `ACU_USER`, `ACU_PASSWORD` ! set for live apply; `ACU_SSH` ? (default Administrator@host; blank = hosted); no ACU_API_VERSION
+- yaml: `matrix.yaml` → multi-host pin+where registry: cells id+erp+default_api+base_url; first cell default; `--cell` selects; host-true from live check; never target.yaml
+- env: `ACU_TENANT`, `ACU_USER`, `ACU_PASSWORD` ! for live apply; `ACU_BASE_URL` ? optional override of active cell base_url; `ACU_SSH` ? (default Administrator@host; blank = hosted); no ACU_API_VERSION
 - entity: Company (AcctCD/AcctName), Account, Ledger, Subaccount, UnitsOfMeasure, InventoryItem, Customer, Vendor, SalesOrder, Role, User, NumberingSequence, …
 
 ## §V INVARIANTS
@@ -63,11 +64,12 @@ V8: no-secrets-in-seed — seed YAML + committed docs never contain passwords, A
 V9: once-capital — seed-capital scenario is once-class; CLI skips when txn already present; Owner Capital not stacked by re-run (closes §B.1)
 V10: seed-layout — apply trees under `config/{bootstrap,baseline,setup,master}/`; `scenario/` = `10-seed-capital` + `20-buy` + `30-build` + `40-sell` + `45-collect` only; monoscenario `buy-sell` forbidden; per-leg delta expects; primary compose `acu apply config/` then `acu run scenario/`
 V11: mixed-ar-collect — cold single run: ACMEMFG invoice Closed; NORTHGRID Open remainder 1045; AGRISENSE Open 897; AR 11000 ending 1942; cash 10100 ending 48159 (seed 50000 − buy 4037 + collect 2196); sales 4138 COGS 1848 unchanged; warm re-run collect additive
-V12: trunk-matrix — multi-version = one trunk seed + per-host `target.yaml` + optional Default-half overlays as path args; long-running release branches (`acu-25r1`/`acu-25r2`/`acu-26r1`) not product lines; no parallel full `config/` copies per ERP version
-V13: pin-truth — committed `target.yaml` `erp` + `default_api` ! host-true from live `acu config check`; invalid Default halves (e.g. `25.100.001` when host max Default is `24.200.001`) forbidden
-V14: overlay-compose — version rewrites under `overlays/<default-half>/` (e.g. `default-24.200.001`); compose `acu apply|diff config/ overlays/<id>/` later path wins same keys
+V12: trunk-matrix — multi-version = one trunk seed + multi-cell `matrix.yaml` + optional Default-half overlays; long-running release branches (`acu-25r1`/`acu-25r2`/`acu-26r1`) not product lines; no parallel full `config/` copies per ERP version; never `target.yaml`
+V13: pin-truth — each committed `matrix.yaml` cell `erp` + `default_api` + `base_url` ! host-true from live `acu config check`; invalid Default halves (e.g. `25.100.001` when host max Default is `24.200.001`) forbidden
+V14: overlay-compose — version rewrites under `overlays/default-<default_api>/` (e.g. `default-24.200.001`); bare apply/run/diff pin auto-compose; explicit `acu apply|diff config/ overlays/<id>/` later path wins same keys
 V15: cold-apply-complete — trunk `config/` cold apply completes full tree; records that abort apply mid-tree (PaymentMethod BILL MeansOfPayment External Payment Processor → 500) drop or gate until apply-safe (closes §B.2)
 V16: matrix-evidence — multi-host validation records seed SHA × host × pin × overlay id × apply/run/diff outcomes under `reports/` (or docs template)
+V17: matrix-registry — committed `matrix.yaml` is sole data-repo pin+where; secrets stay `.env`; sticky `ACU_BASE_URL` optional ad-hoc override only (cleared for multi-cell check)
 
 ## §T TASKS
 
@@ -114,6 +116,7 @@ T39|x|add matrix report template/example under reports/ (seed SHA, host, pin, ov
 T40|x|retire plan acu-25r1 / acu-25r2 long-running branches after trunk+overlay green on lab|V12
 T41|x|README + §I: acu-cli ≥0.23.1 notes (multi-error apply, 422 fields, Bootstrap package SoT 1.4.0; drop stale project.xml docs)|V12,I.cmd
 T42|x|README: User Roles identity-seed-only (Bootstrap cold PUT not durable membership)|V8
+T43|x|retire target.yaml → committed multi-cell matrix.yaml (26r1/25r1/25r2); Makefile→acu check; docs+SPEC floor ≥0.24.0|V12,V13,V17,I.yaml
 
 ## §B BUGS
 

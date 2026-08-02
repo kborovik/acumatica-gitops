@@ -9,12 +9,13 @@ Surgical rewrites for hosts whose Default contract half is **24.200.001**
 
 ## Compose
 
-With `target.yaml` `default_api: "24.200.001"`, bare commands auto-compose:
+With matrix cell `default_api: "24.200.001"` (cell `25r1`), bare commands
+auto-compose:
 
 ```sh
-acu apply
-acu run    # replaces trunk 30-build.yaml with this overlay
-acu diff
+acu --cell 25r1 apply
+acu --cell 25r1 run    # replaces trunk 30-build.yaml with this overlay
+acu --cell 25r1 diff
 ```
 
 Trunk half (`25.200.001+`, e.g. 25r2 / 26r1 lab) has no matching overlay dir
