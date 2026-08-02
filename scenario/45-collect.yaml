@@ -1,0 +1,110 @@
+# Additive collect leg: mixed AR policy (V11).
+# Requires open invoices from scenario/40-sell.yaml (or equivalent).
+# Warm re-run is additive after a fresh sell pack (filters match full-balance Open).
+#
+# Deltas (per cold collect after one sell pack):
+#   ACMEMFG invoice 1196 Closed (full WIRE)
+#   NORTHGRID invoice 2045 -> Balance 1045 Open (partial WIRE 1000)
+#   AGRISENSE invoice 897 stays Open (no payment step)
+#   AR 11000 -2196; cash 10100 +2196
+# Cold full scenario ending (seed 50k - buy 4037 + collect 2196): cash 48159; AR 1942
+scenario: collect
+description: Mixed AR collect (ACMEMFG full, NORTHGRID partial, AGRISENSE open)
+steps:
+# ---- collect: ACMEMFG full 1196 (COD) ---------------------------------
+- id: invnbr-acme
+  get:
+    entity: SalesInvoice
+    filter: "CustomerID eq 'ACMEMFG' and Type eq 'Invoice' and Status eq 'Open' and Balance eq 1196"
+    top: 1
+  capture: {ReferenceNbr: inv_acme}
+- id: pay-acme
+  put: Payment
+  record:
+    Type: Payment
+    CustomerID: ACMEMFG
+    PaymentMethod: WIRE
+    CashAccount: '10100'
+    PaymentAmount: 1196.00
+    PaymentRef: "WIRE-${inv_acme}"
+    Hold: false
+    DocumentsToApply:
+    - {DocType: Invoice, ReferenceNbr: "${inv_acme}", AmountPaid: 1196.00}
+  capture: {ReferenceNbr: pmt_acme}
+- id: release-pay-acme
+  action: {entity: Payment, name: ReleasePayment}
+  record: {Type: Payment, ReferenceNbr: "${pmt_acme}"}
+  wait:
+    entity: Payment
+    keys: [Payment, "${pmt_acme}"]
+    until: {Status: Closed}
+# ---- collect: NORTHGRID partial 1000 (NET30; remainder 1045 open) -----
+- id: invnbr-northgrid
+  get:
+    entity: SalesInvoice
+    filter: "CustomerID eq 'NORTHGRID' and Type eq 'Invoice' and Status eq 'Open' and Balance eq 2045"
+    top: 1
+  capture: {ReferenceNbr: inv_northgrid}
+- id: pay-northgrid
+  put: Payment
+  record:
+    Type: Payment
+    CustomerID: NORTHGRID
+    PaymentMethod: WIRE
+    CashAccount: '10100'
+    PaymentAmount: 1000.00
+    PaymentRef: "WIRE-P-${inv_northgrid}"
+    Hold: false
+    DocumentsToApply:
+    - {DocType: Invoice, ReferenceNbr: "${inv_northgrid}", AmountPaid: 1000.00}
+  capture: {ReferenceNbr: pmt_northgrid}
+- id: release-pay-northgrid
+  action: {entity: Payment, name: ReleasePayment}
+  record: {Type: Payment, ReferenceNbr: "${pmt_northgrid}"}
+  wait:
+    entity: Payment
+    keys: [Payment, "${pmt_northgrid}"]
+    until: {Status: Closed}
+# ---- AGRISENSE: no payment (leave Open 897) --------------------------
+- id: invnbr-agrisense
+  get:
+    entity: SalesInvoice
+    filter: "CustomerID eq 'AGRISENSE' and Type eq 'Invoice' and Status eq 'Open' and Balance eq 897"
+    top: 1
+  capture: {ReferenceNbr: inv_agrisense}
+expect:
+- get:
+    entity: SalesInvoice
+    keys: [Invoice, "${inv_acme}"]
+  fields:
+    Status: Closed
+- get:
+    entity: Payment
+    keys: [Payment, "${pmt_acme}"]
+  fields:
+    Status: Closed
+- get:
+    entity: SalesInvoice
+    keys: [Invoice, "${inv_northgrid}"]
+  fields:
+    Status: Open
+    Balance: 1045.0
+- get:
+    entity: Payment
+    keys: [Payment, "${pmt_northgrid}"]
+  fields:
+    Status: Closed
+- get:
+    entity: SalesInvoice
+    keys: [Invoice, "${inv_agrisense}"]
+  fields:
+    Status: Open
+    Balance: 897.0
+- inquire: AccountSummaryInquiry
+  parameters: {Ledger: ACTUAL, Period: "${current_period}"}
+  match: {Account: '11000'}
+  delta: {EndingBalance: -2196.00}
+- inquire: AccountSummaryInquiry
+  parameters: {Ledger: ACTUAL, Period: "${current_period}"}
+  match: {Account: '10100'}
+  delta: {EndingBalance: 2196.00}

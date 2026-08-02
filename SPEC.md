@@ -94,7 +94,7 @@ T27|x|deepen master *Preferences YAML to 1.3.0 field depth (acu-cli template par
 T28|x|SPEC fold mixed-ar: V3/V6/V10 amend + V11; §I 40-sell vs 45-collect; §C collect policy|V3,V6,V10,V11
 T29|x|config: CreditTerms COD; ACMEMFG Terms COD; NORTHGRID+AGRISENSE stay NET30|V5,V11
 T30|x|split 40-sell → invoice-only expects (AR +4138 cash 0); drop pay steps|V3,V6,V10
-T31|.|add 45-collect: ACMEMFG full 1196; NORTHGRID partial 1000; AGRISENSE no step; status+GL expects|V3,V11
+T31|x|add 45-collect: ACMEMFG full 1196; NORTHGRID partial 1000; AGRISENSE no step; status+GL expects|V3,V11
 T32|.|acu run scenario/ cold green; acu diff config/ clean; acu state → commit trial-balance|V7,V11
 T33|.|README + walk.yaml: collect leg, open AR beat, cash 48159; drop full-collect VO|V1,V6,V11
 
