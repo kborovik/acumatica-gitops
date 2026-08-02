@@ -32,9 +32,10 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - cmd: `acu reconcile` → offline inventory/ vs ?config/ → findings/
 - cmd: `acu schema` → dump OpenAPI → schemas/
 - yaml: `config/bootstrap/*.yaml` → company, features, credit terms (bootstrap endpoint)
+- yaml: `config/bootstrap/project.xml` → Bootstrap/1.3.0 contract (Role/User/NumberingSequence + *Preferences depth; acu config init source)
 - yaml: `config/baseline/*.yaml` → GL/subaccount/UOM foundation (Default + bootstrap endpoints)
 - yaml: `config/setup/*.yaml` → fin year, master calendar, open periods (actions)
-- yaml: `config/master/*.yaml` → inventory, warehouse, customers, vendors, items, module prefs, roles, users
+- yaml: `config/master/*.yaml` → inventory, warehouse, customers, vendors, items, module prefs, roles, users, numbering sequences
 - yaml: `config/views/*.yaml` → state observation defs (not seed; acu state input)
 - yaml: `scenario/10-seed-capital.yaml` → once-class owner capital JE (Dr 10100 / Cr 30000)
 - yaml: `scenario/20-buy.yaml` → additive component PO → receipt → bill → AP pay (four vendors)
@@ -43,7 +44,7 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - yaml: `state/*.yaml` → committed derived observations (acu state output)
 - yaml: `target.yaml` → erp + default_api pin (API version when --api-version absent)
 - env: `ACU_BASE_URL`, `ACU_TENANT`, `ACU_USER`, `ACU_PASSWORD` ! set for live apply; `ACU_SSH` ? (default Administrator@host; blank = hosted); no ACU_API_VERSION
-- entity: Company (AcctCD/AcctName), Account, Ledger, Subaccount, UnitsOfMeasure, InventoryItem, Customer, Vendor, SalesOrder, Role, User, …
+- entity: Company (AcctCD/AcctName), Account, Ledger, Subaccount, UnitsOfMeasure, InventoryItem, Customer, Vendor, SalesOrder, Role, User, NumberingSequence, …
 
 ## §V INVARIANTS
 
@@ -82,9 +83,12 @@ T18|x|open GitHub issue kborovik/acumatica-cli: once-guard skip-if-present + tem
 T19|x|after CLI once ships: warm second acu run scenario/ keeps capital 50000|V7,V9
 T20|x|split buy-build-sell: 20-buy parts (4 vendors) 30-build kit assembly 40-sell; drop finished-goods buy|V3,V6,V10
 T21|x|live probe KitAssembly Type/Status; green acu run scenario/ on buy+build+sell|V3,V6,V7
-T22|.|seed Role SO Admin + User soadmin + membership via acu apply config/master/; role before user (V5); password ! committed (V8)|V5,V8,I.yaml
-T23|.|seed User apadmin + membership built-in role AP Admin via acu apply config/master/; role exists (no Role YAML); password ! committed (V8)|V5,V8,I.yaml
-T24|.|seed User aradmin + membership built-in role AR Admin via acu apply config/master/; role exists (no Role YAML); password ! committed (V8)|V5,V8,I.yaml
+T22|.|seed Role SO Admin + User soadmin + membership config/master/ (role before user); password ! committed|V5,V8,I.yaml,T25
+T23|.|seed User apadmin + membership built-in AP Admin; password ! committed|V5,V8,I.yaml,T25
+T24|.|seed User aradmin + membership built-in AR Admin; password ! committed|V5,V8,I.yaml,T25
+T25|.|sync config/bootstrap/project.xml ← acu-cli Bootstrap/1.3.0 (config init source; Role/User/NumberingSequence + prefs depth)|V4,V7,I.yaml
+T26|.|seed config/master/05-numbering-sequences.yaml NumberingSequence bootstrap; before prefs that cite *NumberingID|V5,T25
+T27|.|deepen master *Preferences YAML to 1.3.0 field depth (acu-cli template parity)|V4,T25,T26
 
 ## §B BUGS
 
