@@ -8,10 +8,14 @@ MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 CHECK_TENANT ?= GITOPS
 # Optional: make check HOST=25r1  (empty = all matrix.yaml cells)
 HOST ?=
+# Walk script for make record (globals --script/-f before subcommand; acu-walk ≥0.7)
+WALK ?= demo/tenant-factory-walk.yaml
+# Optional: make record CELL=25r1  (matrix cell; omit = first cell / sticky URL)
+CELL ?=
 
 default: help
 
-.PHONY: help check
+.PHONY: help check record
 
 check: ## Full E2E matrix lifecycle (acu check; recreate tenant each cell)
 	# Sticky ACU_BASE_URL would override every cell base_url — clear for multi-cell.
@@ -25,10 +29,18 @@ check: ## Full E2E matrix lifecycle (acu check; recreate tenant each cell)
 		acu check --all --yes --tenant $(CHECK_TENANT)
 	fi
 
-record: ## Record a YouTube video
+# acu-walk globals (--script/-f, --cell, --tenant, …) must precede the subcommand.
+record: ## Record a YouTube video (WALK=… CELL=… optional)
 	acu tenant delete --login $(CHECK_TENANT) --yes || true
-	acu-walk clean --yes
-	acu-walk record --yes
+	if [[ -n "$(CELL)" ]]; then
+		$(call header,record script=$(WALK) cell=$(CELL) tenant=$(CHECK_TENANT))
+		acu-walk -f "$(WALK)" --cell "$(CELL)" clean --yes
+		acu-walk -f "$(WALK)" --cell "$(CELL)" record --yes
+	else
+		$(call header,record script=$(WALK) tenant=$(CHECK_TENANT))
+		acu-walk -f "$(WALK)" clean --yes
+		acu-walk -f "$(WALK)" record --yes
+	fi
 
 ###############################################################################
 # Colors and Headers

@@ -16,20 +16,26 @@
 # default film host: 25r1 (acu-25r1-dev1). When filming another cell, change
 # the 02-version-pin label to that cell's full product string above.
 #
-# Credentials from workspace .env (same as `acu`):
-#   ACU_USER, ACU_PASSWORD required; ACU_BASE_URL for the shoot host
-# Optional acu-channel only: ACU_TENANT (not a walk-target source)
-# Walk target: settings.tenant_name (default DEMO); tenant_id optional for browser only
-# Resolve: --tenant-name > settings > DEMO
-# Interp: ${tenant} ${root} ${env:NAME}
+# Credentials: same .env channel as `acu` + optional data-repo matrix.yaml
+#   ACU_PASSWORD required; ACU_USER defaults to admin when unset
+#   ACU_BASE_URL optional when matrix.yaml cell supplies base_url
+#     resolve: --url > ACU_BASE_URL > active cell base_url
+#   No sticky ACU_API_VERSION — pin via --api-version or cell default_api
+#   Optional acu-channel only: ACU_TENANT / ACU_TENANT_ID (not walk-target)
+# Walk target: settings.tenant_name (default DEMO) + optional tenant_id
+# Resolve: --tenant > settings.tenant_name > DEMO; tenant_id settings only (no default)
+# Matrix: --cell selects id (omit = first cell); unknown id hard-errors
+# Interp: ${tenant} ${tenant_id} ${root} ${env:NAME}
 # Tenant CRUD is login-only: `acu tenant create --login …` (no --id)
 #
 # VO budget: ~2.4 w/s. Static frames (login, empty grids) stay ~25–30 words.
 # CLI panes may run longer (scroll is the visual).
 #
-# Record:
-#   acu-walk record demo/major-release-regression-walk.yaml --yes
-# Point ACU_BASE_URL at the film host (or clear sticky URL and use matrix default).
+# Record (acu-walk ≥0.7; globals before subcommand):
+#   acu-walk -f demo/major-release-regression-walk.yaml --cell 25r1 record --yes
+#   acu-walk -f demo/major-release-regression-walk.yaml clean --yes
+#   make record WALK=demo/major-release-regression-walk.yaml CELL=25r1
+# Film host: --cell 25r1 (default film host) or --url / clear sticky ACU_BASE_URL.
 
 version: 1
 settings:

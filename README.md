@@ -116,9 +116,14 @@ and [acu-cli#29](https://github.com/kborovik/acu-cli/issues/29).
 
 ## Pitch path
 
-See [demo/walk.yaml](demo/walk.yaml) — the promo video's script, shot plan and
-narration, and the beat-by-beat source for this path.
-Short version:
+Promo scripts live under `demo/` (acu-walk ≥ **0.7**):
+
+| Script | Pitch |
+|--------|--------|
+| [demo/tenant-factory-walk.yaml](demo/tenant-factory-walk.yaml) | Demo Tenant Factory (empty → masters → linked history) |
+| [demo/major-release-regression-walk.yaml](demo/major-release-regression-walk.yaml) | Major-release regression service (matrix cells + gate) |
+
+Short version (tenant-factory):
 
 1. Company **LAB5 Electronics Inc.**
 2. Bank funded (Owner Capital to Checking 10100)
@@ -128,11 +133,27 @@ Short version:
 6. Mixed AR collect: ACMEMFG COD full, NORTHGRID partial, AGRISENSE open
 7. Cold ending: cash **48159**, AR **1942** (not fully collected)
 
-The walk itself is scripted — see [demo/](demo/README.md).
-One command captures the
-full product: `make demo` ensures CLI replay logs, drives every beat, and writes
-stills plus `demo/out/video/walk.webm`.
-Cold reshoot: `make demo-clean && make demo`.
+Record with [`acu-walk`](https://github.com/kborovik/acu-walk) (globals **before** the
+subcommand; credentials from the same `.env` as `acu` + optional `matrix.yaml`):
+
+```sh
+# Demo Tenant Factory (default make target)
+make record
+# or:
+acu-walk -f demo/tenant-factory-walk.yaml clean --yes
+acu-walk -f demo/tenant-factory-walk.yaml record --yes
+
+# Major-release regression on a matrix cell (film host)
+make record WALK=demo/major-release-regression-walk.yaml CELL=25r1
+# or:
+acu-walk -f demo/major-release-regression-walk.yaml --cell 25r1 record --yes
+
+# VO re-mux only / validate
+acu-walk -f demo/tenant-factory-walk.yaml record --vo
+acu-walk -f demo/tenant-factory-walk.yaml config validate
+```
+
+Output under `demo/out/` (`cli/`, `shots/`, `vo/`, `video/`). `clean` keeps `video/`.
 
 ## Demo users (identity seed only)
 

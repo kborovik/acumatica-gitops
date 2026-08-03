@@ -4,7 +4,7 @@
 # Buys parts for one build pack (30-build): 10 EDGE + 5 CELL + 5 RAIL BOM,
 # plus a buffer so components do NOT net to zero. Buying exactly the BOM left
 # every part at 0 on hand, so IN401000 filmed as "No records yet" and the
-# demo/walk.yaml parts-on-hand beat had nothing to show. Buffer is +5 on the
+# demo/tenant-factory-walk.yaml parts-on-hand beat had nothing to show. Buffer is +5 on the
 # high-volume lines and +3 on the x5 lines; a real manufacturer carries stock.
 # Four component vendors (SHENZHEN / ENCLOTEC / WAVELINK / MEMSTOR).
 #
