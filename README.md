@@ -180,7 +180,8 @@ and optional overlays — **not** long-running release branches as product lines
 **Trunk branch:** `main` (lab cells in `matrix.yaml`; default cell `26r1`).
 
 Long-running `acu-25r1` / `acu-25r2` / `acu-26r1` are not product lines.
-Retire leftover release branches only after trunk+overlay is green on lab.
+Retire leftover release branches only after trunk+overlay is green on lab —
+plan: [reports/retire-release-branches.md](reports/retire-release-branches.md).
 
 | Piece | Role |
 |-------|------|
@@ -203,7 +204,7 @@ Committed `matrix.yaml` is the sole pin+where registry. Each lab host is a cell:
 else the CLI code default — never `ACU_API_VERSION` in `.env`.
 REST where: `--url`, then optional `ACU_BASE_URL`, then cell `base_url`.
 Pins must be **host-true** from live check (invalid Default halves forbidden).
-Pin table above matches committed `matrix.yaml` cells.
+Canonical table: [reports/matrix-pins.md](reports/matrix-pins.md).
 
 ### Overlay compose
 
