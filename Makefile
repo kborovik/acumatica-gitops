@@ -31,7 +31,7 @@ check: ## Full E2E matrix lifecycle (acu check; recreate tenant each cell)
 
 record: ## Record a YouTube video
 	acu-walk config validate
-	acu-walk record
+	acu-walk record --yes
 
 ###############################################################################
 # Colors and Headers

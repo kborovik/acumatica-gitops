@@ -1,57 +1,10 @@
 # acu-walk script — Major-release regression service pitch
 # (lab5.ca/services/major-release-regression).
-# Narrative:
-#   problem (manual UAT / fire drill)
-#   → certify this GitOps seed on three Acumatica majors
-#   → per cell: host login (version footer visual) → acu --cell <id> check
-#     → Account Summary (GL401000) as pass proof
-# Drivers: matrix.yaml cells + config/** + scenario/ + acu check lifecycle.
-# Not a Demo Tenant Factory film — that is demo/tenant-factory-walk.yaml.
 #
-# Matrix act order: 25r1 → 25r2 → 26r1.
-# Full product strings (host-true; About / login footer — show, do not digit-spell in VO):
-#   --cell 25r1 → Acumatica Cloud ERP 2025 R1 · Build 25.101.0153
-#   --cell 25r2 → Acumatica Cloud ERP 2025 R2 · Build 25.201.0213
-#   --cell 26r1 → Acumatica Cloud ERP 2026 R1 · Build 26.101.0225
-#
-# Host stills (version bottom-right of login form):
-#   demo/hosts/25r1-login.jpg
-#   demo/hosts/25r2-login.jpg
-#   demo/hosts/26r1-login.jpg
-# Account Summary proof still:
-#   demo/hosts/account-summary-proof.jpg  (GL401000 after cold apply+run)
-#
-# Film note: one browser session = one film host (`--cell` / matrix base_url).
-# Host login stills for non-film cells are editorial inserts from demo/hosts/.
-# Live `screen: login` / GL401000 shoot the active film host; splice multi-host
-# stills in post when the cut needs all three footers on camera.
-# `acu check` is cold lifecycle (delete→create→apply→run→diff→delete); CLI
-# scroll is the gate. GL401000 proof still is the books after a successful
-# apply+run (same seed) — pre-capture CLI with ensure_captures when needed.
-#
-# Credentials: same .env channel as `acu` + optional data-repo matrix.yaml
-#   ACU_PASSWORD required; ACU_USER defaults to admin when unset
-#   ACU_BASE_URL optional when matrix.yaml cell supplies base_url
-#     resolve: --url > ACU_BASE_URL > active cell base_url
-#   No sticky ACU_API_VERSION — pin via --api-version or cell default_api
-# Walk target: settings.tenant_name (default DEMO) + optional tenant_id
-# Resolve: --tenant > settings.tenant_name > DEMO; tenant_id settings only
-# Matrix: --cell selects id (omit = first cell); unknown id hard-errors
-# Interp: ${tenant} ${tenant_id} ${root} ${env:NAME}
-#
-# VO budget: ~2.4 w/s. Static frames (login, empty grids) stay ~25–30 words.
-# CLI panes may run longer (scroll is the visual). Never digit-spell builds
-# in VO — version lives in the login footer / label, not the voiceover.
-#
-# Record (acu-walk ≥0.7; globals before subcommand):
-#   acu-walk -f demo/major-release-regression-walk.yaml --cell 25r1 record --yes
-#   acu-walk -f demo/major-release-regression-walk.yaml clean --yes
-#   make record WALK=demo/major-release-regression-walk.yaml CELL=25r1
-# Film host: --cell 25r1 (default film host) or --url / clear sticky ACU_BASE_URL.
-# Pre-capture long check runs:
-#   acu --cell 25r1 check --yes --tenant GITOPS
-#   acu --cell 25r2 check --yes --tenant GITOPS
-#   acu --cell 26r1 check --yes --tenant GITOPS
+# Cell order follows matrix recency: 26r1 → 25r2 → 25r1.
+# ACT 3–5 each: login (host pin highlighted) → `acu --cell <id> check` → GL401000.
+# ACT 6: Account Summary stills per cell (same GL401000 proof frames; re-shoot
+#   with `acu-walk --cell <id> …` when host-specific books/footers must match).
 
 version: 1
 settings:
@@ -80,18 +33,11 @@ settings:
     Inc. Service: lab5.ca/services/major-release-regression.
 
     #Acumatica #GitOps #RegressionTesting #ERP #MajorRelease
-  # headed: false
-  # width: 1600
-  # height: 900
-  # vo_provider: speechify
-  # vo_emotion: direct
 
 cli:
-  # Cold matrix lifecycle per cell: delete→create→apply→run→diff→delete.
-  # Same as `make check HOST=<id>`. --yes for noninteractive capture.
-  # Order: 25r1 → 25r2 → 26r1.
-  check-25r1:
-    argv: ["acu", "--cell", "25r1", "check", "--yes", "--tenant", "${tenant}"]
+  # Order: 26r1 → 25r2 → 25r1 (matrix recency).
+  check-26r1:
+    argv: ["acu", "--cell", "26r1", "check", "--yes", "--tenant", "${tenant}"]
     write: true
     when: interleaved
     ok_exits: [0]
@@ -100,8 +46,8 @@ cli:
     write: true
     when: interleaved
     ok_exits: [0]
-  check-26r1:
-    argv: ["acu", "--cell", "26r1", "check", "--yes", "--tenant", "${tenant}"]
+  check-25r1:
+    argv: ["acu", "--cell", "25r1", "check", "--yes", "--tenant", "${tenant}"]
     write: true
     when: interleaved
     ok_exits: [0]
@@ -111,8 +57,6 @@ beats:
   # ACT 1 — THE WAY IT'S DONE NOW
   # ===========================================================================
 
-  # Camera: sign-in page, clean — no terminal pane. KEEP SHORT (static frame).
-  # Friction only: two majors a year, manual UAT or nothing.
   - id: "00-var-problem"
     screen: login
     vo: >
@@ -124,7 +68,6 @@ beats:
   # ACT 2 — INTENT (certify this GitOps repo on three majors)
   # ===========================================================================
 
-  # Camera: same sign-in — still frame. States what we will prove, not how.
   - id: "01-intent"
     screen: login
     vo: >
@@ -133,47 +76,41 @@ beats:
       major releases. Same data tree. Three Windows hosts. One gate per cell.
 
   # ===========================================================================
-  # ACT 3 — CELL 25r1 (host → check → Account Summary)
+  # ACT 3 — CELL 26r1 (login pin → check → GL401000)
+  # erp: 26.101.0225
   # ===========================================================================
 
-  # Camera: login on acu-25r1-dev1. Version lives bottom-right of the form
-  # (Acumatica Cloud ERP 2025 R1 · Build 25.101.0153). Highlight the footer —
-  # do not digit-spell it in VO. Reference still: demo/hosts/25r1-login.jpg
-  - id: "02-host-25r1"
+  - id: "02-host-26r1"
     screen: login
-    highlight: ["Acumatica Cloud ERP 2025 R1", "Build 25.101.0153"]
-    label: "2025 R1 · 25.101.0153"
+    highlight: ["Acumatica Cloud ERP 2026 R1", "Build 26.101.0225"]
+    label: "2026 R1 · 26.101.0225"
     vo: >
-      First host: Acumatica version twenty-five R-one.
+      First host: Acumatica version twenty-six R-one.
 
-  # Camera: terminal over login. Long lifecycle scroll is the deploy visual.
-  - id: "03-cli-check-25r1"
-    cli: check-25r1
+  - id: "03-cli-check-26r1"
+    cli: check-26r1
     backdrop: login
     speed: 50
     max_lines: 500
-    label: "acu --cell 25r1 check"
+    label: "acu --cell 26r1 check"
     vo: >
       One command runs the cold lifecycle: delete, create, apply, run
       scenarios, diff, done. Exit zero is pass.
 
-  # Camera: Account Summary (GL401000). Proof books after successful seed.
-  # Reference still: demo/hosts/account-summary-proof.jpg
-  - id: "04-proof-25r1"
+  - id: "04-proof-26r1"
     screen: GL401000
     highlight: ["Checking Account"]
     row: true
-    label: "Account Summary · 25r1 pass"
+    label: "Account Summary · 26r1 pass"
     vo: >
       Account Summary is the proof. Checking, A-R, inventory, and capital land
-      where the seed expects — green books on twenty-five R-one.
+      where the seed expects — green books on twenty-six R-one.
 
   # ===========================================================================
-  # ACT 4 — CELL 25r2
+  # ACT 4 — CELL 25r2 (login pin → check → GL401000)
+  # erp: 25.201.0213
   # ===========================================================================
 
-  # Camera: login on acu-25r2-dev1. Footer: 2025 R2 · Build 25.201.0213.
-  # Reference still: demo/hosts/25r2-login.jpg (splice when film host ≠ 25r2)
   - id: "05-host-25r2"
     screen: login
     highlight: ["Acumatica Cloud ERP 2025 R2", "Build 25.201.0213"]
@@ -200,33 +137,44 @@ beats:
       R-two — not a hand-keyed demo balance.
 
   # ===========================================================================
-  # ACT 5 — CELL 26r1
+  # ACT 5 — CELL 25r1 (login pin → check → GL401000)
+  # erp: 25.101.0153
   # ===========================================================================
 
-  # Camera: login on acu-26r1-dev1. Footer: 2026 R1 · Build 26.101.0225.
-  # Reference still: demo/hosts/26r1-login.jpg
-  - id: "08-host-26r1"
+  - id: "08-host-25r1"
     screen: login
-    highlight: ["Acumatica Cloud ERP 2026 R1", "Build 26.101.0225"]
-    label: "2026 R1 · 26.101.0225"
+    highlight: ["Acumatica Cloud ERP 2025 R1", "Build 25.101.0153"]
+    label: "2025 R1 · 25.101.0153"
     vo: >
-      Third host: Acumatica version twenty-six R-one.
+      Third host: Acumatica version twenty-five R-one.
 
-  - id: "09-cli-check-26r1"
-    cli: check-26r1
+  - id: "09-cli-check-25r1"
+    cli: check-25r1
     backdrop: login
     speed: 50
     max_lines: 500
-    label: "acu --cell 26r1 check"
+    label: "acu --cell 25r1 check"
     vo: >
-      Cold lifecycle on the newest major — apply, exercise, diff, gate.
+      Cold lifecycle on the oldest major in the matrix — apply, exercise, diff,
+      gate.
 
-  - id: "10-proof-26r1"
+  - id: "10-proof-25r1"
     screen: GL401000
     highlight: ["Checking Account"]
     row: true
-    label: "Account Summary · 26r1 pass"
+    label: "Account Summary · 25r1 pass"
     vo: >
       Account Summary closes the matrix. Same books, three majors. Put your
       name on the report as the release gate — or resell it under your brand
       when the format is ready. Complements certified U-A-T; never replaces it.
+
+  # ===========================================================================
+  # ACT 6 — GL401000 STILLS (26r1, 25r2, 25r1) — generated host-true
+  # Proof beats 04 / 07 / 10 (above) + host pins 02 / 05 / 08 shot with matching
+  # --cell. acu-walk browser uses one base_url per take; re-shoot when books
+  # drift:
+  #   settings.beats: "04"  +  acu-walk -f demo/walk.yaml --cell 26r1 record --yes
+  #   settings.beats: "07"  +  … --cell 25r2 …
+  #   settings.beats: "10"  +  … --cell 25r1 …
+  # (prefix match only — full ids with "-" are parsed as beat ranges.)
+  # ===========================================================================
