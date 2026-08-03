@@ -143,8 +143,12 @@ make record
 acu-walk -f demo/tenant-factory-walk.yaml clean --yes
 acu-walk -f demo/tenant-factory-walk.yaml record --yes
 
-# Major-release regression on a matrix cell (film host)
-acu-walk -f demo/walk.yaml --cell 25r1 record --yes
+# Major-release regression multi-cell film (beat cell: switches hosts; V25)
+# Prefer make record so sticky ACU_BASE_URL is cleared for matrix cells:
+#   make record WALK=demo/walk.yaml
+acu-walk -f demo/walk.yaml record --yes
+# Optional take-default host (still honor per-beat cell:):
+#   make record WALK=demo/walk.yaml CELL=26r1
 
 # VO re-mux only / validate
 acu-walk -f demo/tenant-factory-walk.yaml record --vo
@@ -160,7 +164,8 @@ Output under `demo/out/` (`cli/`, `shots/`, `vo/`, `video/`). `clean` keeps `vid
 (passwords are demo-only and may be committed per §C).
 
 **Role membership is not durable on Bootstrap cold PUT** (live GET returns
-empty `Roles: []` after apply — §B.3). Treat User/Role YAML as **identity
+empty `Roles: []` after apply — §B.3).
+Treat User/Role YAML as **identity
 seed only**: create the logins; assign SO/AP/AR Admin membership in the UI
 (or a later durable path) when the pitch needs those screens.
 
@@ -192,7 +197,8 @@ plan: [reports/retire-release-branches.md](reports/retire-release-branches.md).
 
 ### Pins
 
-Committed `matrix.yaml` is the sole pin+where registry. Each lab host is a cell:
+Committed `matrix.yaml` is the sole pin+where registry.
+Each lab host is a cell:
 
 | Cell id | ERP (`erp`) | Default (`default_api`) | Overlay |
 |---------|-------------|-------------------------|---------|
@@ -208,7 +214,8 @@ Canonical table: [reports/matrix-pins.md](reports/matrix-pins.md).
 
 ### Overlay compose
 
-Overlays live under `overlays/default-<default_api>/`. With host-true matrix
+Overlays live under `overlays/default-<default_api>/`.
+With host-true matrix
 cells, **bare** commands auto-compose the pin overlay (acu-cli at least 0.24.0).
 Explicit path args disable auto.
 

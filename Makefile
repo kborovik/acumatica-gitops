@@ -9,8 +9,10 @@ CHECK_TENANT ?= GITOPS
 # Optional: make check HOST=25r1  (empty = all matrix.yaml cells)
 HOST ?=
 # Walk script for make record (globals --script/-f before subcommand; acu-walk ≥0.7)
+# Major-release multi-cell film: WALK=demo/walk.yaml (beat cell: switches hosts).
 WALK ?= demo/tenant-factory-walk.yaml
-# Optional: make record CELL=25r1  (matrix cell; omit = first cell / sticky URL)
+# Optional take-default matrix cell (omit = first cell when sticky BASE_URL cleared).
+# Beat-level cell: still switches mid-take for multi-host films (acu-walk V25).
 CELL ?=
 
 default: help
@@ -29,9 +31,18 @@ check: ## Full E2E matrix lifecycle (acu check; recreate tenant each cell)
 		acu check --all --yes --tenant $(CHECK_TENANT)
 	fi
 
-record: ## Record a YouTube video
-	acu-walk config validate
-	acu-walk record --yes
+record: ## Record walk film (WALK=… CELL=… optional; unsets sticky ACU_BASE_URL)
+	# Sticky ACU_BASE_URL masks matrix/--cell for the take default host.
+	# Beat cell: (V25) still uses matrix base_url; clearing sticky keeps take
+	# boot + config show aligned with matrix first cell or CELL=.
+	unset ACU_BASE_URL || true
+	args=(-f "$(WALK)")
+	if [[ -n "$(CELL)" ]]; then
+		args+=(--cell "$(CELL)")
+	fi
+	$(call header,record script=$(WALK)$(if $(CELL), cell=$(CELL),))
+	acu-walk "$${args[@]}" config validate
+	acu-walk "$${args[@]}" record --yes
 
 ###############################################################################
 # Colors and Headers

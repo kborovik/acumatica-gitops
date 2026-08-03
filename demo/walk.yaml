@@ -3,8 +3,9 @@
 #
 # Cell order follows matrix recency: 26r1 → 25r2 → 25r1.
 # ACT 3–5 each: login (host pin highlighted) → `acu --cell <id> check` → GL401000.
-# ACT 6: Account Summary stills per cell (same GL401000 proof frames; re-shoot
-#   with `acu-walk --cell <id> …` when host-specific books/footers must match).
+# Beat `cell:` (acu-walk V25) switches Playwright mid-take to that matrix host
+# so host pins + GL proofs are host-true in one continuous film.
+# Sticky ACU_BASE_URL does not override beat cell where — use matrix cells.
 
 version: 1
 settings:
@@ -81,6 +82,7 @@ beats:
   # ===========================================================================
 
   - id: "02-host-26r1"
+    cell: 26r1
     screen: login
     highlight: ["Acumatica Cloud ERP 2026 R1", "Build 26.101.0225"]
     label: "2026 R1 · 26.101.0225"
@@ -88,6 +90,7 @@ beats:
       First host: Acumatica version twenty-six R-one.
 
   - id: "03-cli-check-26r1"
+    cell: 26r1
     cli: check-26r1
     backdrop: login
     speed: 50
@@ -98,6 +101,7 @@ beats:
       scenarios, diff, done. Exit zero is pass.
 
   - id: "04-proof-26r1"
+    cell: 26r1
     screen: GL401000
     highlight: ["Checking Account"]
     row: true
@@ -112,6 +116,7 @@ beats:
   # ===========================================================================
 
   - id: "05-host-25r2"
+    cell: 25r2
     screen: login
     highlight: ["Acumatica Cloud ERP 2025 R2", "Build 25.201.0213"]
     label: "2025 R2 · 25.201.0213"
@@ -119,6 +124,7 @@ beats:
       Second host: Acumatica version twenty-five R-two.
 
   - id: "06-cli-check-25r2"
+    cell: 25r2
     cli: check-25r2
     backdrop: login
     speed: 50
@@ -128,6 +134,7 @@ beats:
       Same process for the next version.
 
   - id: "07-proof-25r2"
+    cell: 25r2
     screen: GL401000
     highlight: ["Checking Account"]
     row: true
@@ -142,6 +149,7 @@ beats:
   # ===========================================================================
 
   - id: "08-host-25r1"
+    cell: 25r1
     screen: login
     highlight: ["Acumatica Cloud ERP 2025 R1", "Build 25.101.0153"]
     label: "2025 R1 · 25.101.0153"
@@ -149,6 +157,7 @@ beats:
       Third host: Acumatica version twenty-five R-one.
 
   - id: "09-cli-check-25r1"
+    cell: 25r1
     cli: check-25r1
     backdrop: login
     speed: 50
@@ -159,6 +168,7 @@ beats:
       gate.
 
   - id: "10-proof-25r1"
+    cell: 25r1
     screen: GL401000
     highlight: ["Checking Account"]
     row: true
@@ -169,12 +179,10 @@ beats:
       when the format is ready. Complements certified U-A-T; never replaces it.
 
   # ===========================================================================
-  # ACT 6 — GL401000 STILLS (26r1, 25r2, 25r1) — generated host-true
-  # Proof beats 04 / 07 / 10 (above) + host pins 02 / 05 / 08 shot with matching
-  # --cell. acu-walk browser uses one base_url per take; re-shoot when books
-  # drift:
+  # Host-true multi-cell film (acu-walk V25): each host/proof beat sets cell:
+  # so one take switches Playwright across matrix hosts. CLI recipes still
+  # hardcode --cell in argv. Prefer: unset sticky ACU_BASE_URL (make record).
+  # Optional single-host re-shoot still works:
   #   settings.beats: "04"  +  acu-walk -f demo/walk.yaml --cell 26r1 record --yes
-  #   settings.beats: "07"  +  … --cell 25r2 …
-  #   settings.beats: "10"  +  … --cell 25r1 …
   # (prefix match only — full ids with "-" are parsed as beat ranges.)
   # ===========================================================================
