@@ -8,9 +8,10 @@ MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 CHECK_TENANT ?= GITOPS
 # Optional: make check HOST=25r1  (empty = all matrix.yaml cells)
 HOST ?=
-# Walk script for make record (globals --script/-f before subcommand; acu-walk ≥0.7)
-# Major-release multi-cell film: WALK=demo/walk.yaml (beat cell: switches hosts).
-WALK ?= demo/tenant-factory-walk.yaml
+# Walk script for make record (globals --script/-f before subcommand; acu-walk ≥0.7).
+# Only demo/walk.yaml is active (major-release multi-cell film; beat cell: switches hosts).
+# Other demo/*-walk.yaml files are archive — do not point record at them.
+WALK := demo/walk.yaml
 # Optional take-default matrix cell (omit = first cell when sticky BASE_URL cleared).
 # Beat-level cell: still switches mid-take for multi-host films (acu-walk V25).
 CELL ?=
@@ -31,7 +32,7 @@ check: ## Full E2E matrix lifecycle (acu check; recreate tenant each cell)
 		acu check --all --yes --tenant $(CHECK_TENANT)
 	fi
 
-record: ## Record walk film (WALK=… CELL=… optional; unsets sticky ACU_BASE_URL)
+record: ## Record walk film (demo/walk.yaml; CELL=… optional; unsets sticky ACU_BASE_URL)
 	# Sticky ACU_BASE_URL masks matrix/--cell for the take default host.
 	# Beat cell: (V25) still uses matrix base_url; clearing sticky keeps take
 	# boot + config show aligned with matrix first cell or CELL=.

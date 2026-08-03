@@ -37,21 +37,26 @@ settings:
 
 cli:
   # Order: 26r1 → 25r2 → 25r1 (matrix recency).
+  # after: [relogin] — check deletes+recreates the tenant; stale UI session
+  # leaves GL401000 empty ("Checking Account" never appears) after a green gate.
   check-26r1:
     argv: ["acu", "--cell", "26r1", "check", "--yes", "--tenant", "${tenant}"]
     write: true
     when: interleaved
     ok_exits: [0]
+    after: [relogin]
   check-25r2:
     argv: ["acu", "--cell", "25r2", "check", "--yes", "--tenant", "${tenant}"]
     write: true
     when: interleaved
     ok_exits: [0]
+    after: [relogin]
   check-25r1:
     argv: ["acu", "--cell", "25r1", "check", "--yes", "--tenant", "${tenant}"]
     write: true
     when: interleaved
     ok_exits: [0]
+    after: [relogin]
 
 beats:
   # ===========================================================================
@@ -61,9 +66,10 @@ beats:
   - id: "00-var-problem"
     screen: login
     vo: >
-      Acumatica ships two major releases a year. Every tenant with
-      customizations or integrations carries regression risk — and the answer
-      today is manual click-through UAT, or nothing.
+      Acumatica ships two major releases a year. Every tenant that has
+      customizations or integrations carries regression risk into each release.
+      Today the usual answer is manual click-through user acceptance testing —
+      or no automated proof at all.
 
   # ===========================================================================
   # ACT 2 — INTENT (certify this GitOps repo on three majors)
@@ -72,9 +78,11 @@ beats:
   - id: "01-intent"
     screen: login
     vo: >
-      We certify this GitOps seed — company, chart of accounts, masters, and
-      linked buy-build-sell history for LAB5 Electronics — on three Acumatica
-      major releases. Same data tree. Three Windows hosts. One gate per cell.
+      In this film we certify a GitOps seed for LAB5 Electronics. That seed is
+      version-controlled company setup: the company record, chart of accounts,
+      master data, and a linked history of seed capital, buy, build, sell, and
+      collect. We run it on three Acumatica major releases. Same data tree.
+      Three separate Windows hosts. One automated pass-or-fail gate per host.
 
   # ===========================================================================
   # ACT 3 — CELL 26r1 (login pin → check → GL401000)
@@ -87,28 +95,41 @@ beats:
     highlight: ["Acumatica Cloud ERP 2026 R1", "Build 26.101.0225"]
     label: "2026 R1 · 26.101.0225"
     vo: >
-      First host: Acumatica version twenty-six R-one.
+      First we pin the host. The login footer shows Acumatica Cloud ERP
+      twenty twenty-six release one. That product version is our host
+      identity for this matrix cell.
 
   - id: "03-cli-check-26r1"
     cell: 26r1
     cli: check-26r1
-    backdrop: login
+    # No backdrop: login — that stashes cookies and restore_session_cookies
+    # would undo recipe after: [relogin] after the cold tenant recreate.
     speed: 50
     max_lines: 500
     label: "acu --cell 26r1 check"
     vo: >
-      One command runs the cold lifecycle: delete, create, apply, run
-      scenarios, diff, done. Exit zero is pass.
+      One command, acu check against this cell, runs a cold lifecycle from a
+      clean slate. It deletes the prior tenant state, creates the company,
+      applies the GitOps seed, runs the buy-build-sell scenarios, diffs the
+      results against expected books, and finishes. An exit code of zero means
+      the gate passed.
 
   - id: "04-proof-26r1"
     cell: 26r1
     screen: GL401000
+    # Force filters: 26R1 may open with empty Company/Branch + Ledger
+    # ("No records yet") even when books are posted under branch LAB5.
+    fill:
+      Company/Branch: LAB5
+      Ledger: ACTUAL
     highlight: ["Checking Account"]
     row: true
     label: "Account Summary · 26r1 pass"
     vo: >
-      Account Summary is the proof. Checking, A-R, inventory, and capital land
-      where the seed expects — green books on twenty-six R-one.
+      Account Summary on the general ledger is the books proof. Checking
+      account, accounts receivable, inventory, and capital land where the seed
+      expects them. The general ledger matches on twenty twenty-six release
+      one.
 
   # ===========================================================================
   # ACT 4 — CELL 25r2 (login pin → check → GL401000)
@@ -121,27 +142,36 @@ beats:
     highlight: ["Acumatica Cloud ERP 2025 R2", "Build 25.201.0213"]
     label: "2025 R2 · 25.201.0213"
     vo: >
-      Second host: Acumatica version twenty-five R-two.
+      Second host. The login footer now shows Acumatica Cloud ERP
+      twenty twenty-five release two. A different major release, a
+      different Windows host, same certification goal.
 
   - id: "06-cli-check-25r2"
     cell: 25r2
     cli: check-25r2
-    backdrop: login
+    # No backdrop: login — see 03-cli-check-26r1 (relogin must stick).
     speed: 50
     max_lines: 500
     label: "acu --cell 25r2 check"
     vo: >
-      Same process for the next version.
+      We run the same cold lifecycle on twenty twenty-five release two.
+      Delete, create, apply the seed, run scenarios, diff the books, and
+      require exit code zero. One command per matrix cell — no manual
+      re-keying between majors.
 
   - id: "07-proof-25r2"
     cell: 25r2
     screen: GL401000
+    fill:
+      Company/Branch: LAB5
+      Ledger: ACTUAL
     highlight: ["Checking Account"]
     row: true
     label: "Account Summary · 25r2 pass"
     vo: >
-      Account Summary again. Linked history matches the seed on twenty-five
-      R-two — not a hand-keyed demo balance.
+      Account Summary again for this host. Checking, receivables, inventory,
+      and capital match the seed on twenty twenty-five release two. These are
+      posted results from the linked history, not a hand-keyed demo balance.
 
   # ===========================================================================
   # ACT 5 — CELL 25r1 (login pin → check → GL401000)
@@ -154,29 +184,38 @@ beats:
     highlight: ["Acumatica Cloud ERP 2025 R1", "Build 25.101.0153"]
     label: "2025 R1 · 25.101.0153"
     vo: >
-      Third host: Acumatica version twenty-five R-one.
+      Third host. The login footer shows Acumatica Cloud ERP twenty
+      twenty-five release one. That completes the three-major matrix we
+      certify against.
 
   - id: "09-cli-check-25r1"
     cell: 25r1
     cli: check-25r1
-    backdrop: login
+    # No backdrop: login — see 03-cli-check-26r1 (relogin must stick).
     speed: 50
     max_lines: 500
     label: "acu --cell 25r1 check"
     vo: >
-      Cold lifecycle on the oldest major in the matrix — apply, exercise, diff,
-      gate.
+      Cold lifecycle once more on twenty twenty-five release one. The check
+      command applies the GitOps seed, runs the scenarios, diffs the results,
+      and gates on a clean exit. Same process as the newer majors, older
+      product line.
 
   - id: "10-proof-25r1"
     cell: 25r1
     screen: GL401000
+    fill:
+      Company/Branch: LAB5
+      Ledger: ACTUAL
     highlight: ["Checking Account"]
     row: true
     label: "Account Summary · 25r1 pass"
     vo: >
-      Account Summary closes the matrix. Same books, three majors. Put your
-      name on the report as the release gate — or resell it under your brand
-      when the format is ready. Complements certified U-A-T; never replaces it.
+      Account Summary closes the matrix. The same books pass on three
+      Acumatica major releases — twenty twenty-six release one, twenty
+      twenty-five release two, and twenty twenty-five release one. One seed,
+      three hosts, automated proof that complements certified user acceptance
+      testing rather than replacing it.
 
   # ===========================================================================
   # Host-true multi-cell film (acu-walk V25): each host/proof beat sets cell:
