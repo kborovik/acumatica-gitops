@@ -45,7 +45,7 @@ Rebuildable Acumatica manufacturer demo tenant LAB5 Electronics Inc. for lab5.ca
 - yaml: `scenario/30-build.yaml` → additive kit assembly (parts → GW kits)
 - yaml: `scenario/40-sell.yaml` → additive SO → ship → invoice release (three-customer pack; no AR pay)
 - yaml: `scenario/45-collect.yaml` → additive AR collect: ACMEMFG full 1196; NORTHGRID partial 1000; AGRISENSE open
-- yaml: `state/*.yaml` → committed derived observations (acu state output)
+- yaml: `state/*.yaml` → local derived observations (`acu state` output; gitignored; optional commit not required)
 - yaml: `reports/*` → multi-host matrix evidence (seed SHA × host × pin × overlay × outcomes); not seed
 - yaml: `matrix.yaml` → multi-host pin+where registry: cells id+erp+default_api+base_url; first cell default; `--cell` selects; host-true from live check; never target.yaml
 - env: `ACU_TENANT`, `ACU_USER`, `ACU_PASSWORD` ! for live apply; `ACU_BASE_URL` ? optional override of active cell base_url; `ACU_SSH` ? (default Administrator@host; blank = hosted); no ACU_API_VERSION
@@ -113,7 +113,7 @@ T36|x|trunk seed: drop or gate PaymentMethod BILL so cold acu apply config/ comp
 T37|x|add overlays/default-24.200.001 KitAssembly Type Assembly (vs Production) + document apply path|V14,V12
 T38|x|correct any committed 25r1 pin examples to host-true Default half 24.200.001|V13
 T39|x|add matrix report template/example under reports/ (seed SHA, host, pin, overlay, outcomes)|V16
-T40|x|retire plan acu-25r1 / acu-25r2 long-running branches after trunk+overlay green on lab|V12
+T40|.|retire plan acu-25r1 / acu-25r2 long-running branches after trunk+overlay green on lab|V12
 T41|x|README + §I: acu-cli ≥0.23.1 notes (multi-error apply, 422 fields, Bootstrap package SoT 1.4.0; drop stale project.xml docs)|V12,I.cmd
 T42|x|README: User Roles identity-seed-only (Bootstrap cold PUT not durable membership)|V8
 T43|x|retire target.yaml → committed multi-cell matrix.yaml (26r1/25r1/25r2); Makefile→acu check; docs+SPEC floor ≥0.24.0|V12,V13,V17,I.yaml

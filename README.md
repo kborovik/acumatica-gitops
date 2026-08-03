@@ -7,7 +7,7 @@ Rebuild from empty to company, masters, and linked transaction history
 Not a production ERP.
 
 Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acumatica-cli`)
-**≥ 0.24.0**.
+**at least 0.24.0**.
 
 ## Layout
 
@@ -24,10 +24,10 @@ Requires the [`acu` CLI](https://github.com/kborovik/acumatica-cli) (PyPI: `acum
 | `scenario/30-build.yaml` | Additive kit assembly (parts to GW-EDGE / CELL / RAIL) |
 | `scenario/40-sell.yaml` | Additive SO to ship to invoice (three customers; no AR pay) |
 | `scenario/45-collect.yaml` | Additive mixed AR collect: ACMEMFG full, NORTHGRID partial, AGRISENSE open |
-| `state/` | Committed derived observations (`acu state` from `config/views/`) |
+| `state/` | Local derived observations (`acu state` from `config/views/`; gitignored) |
 | `overlays/` | Optional Default-half rewrites (`default-<default_api>/`); bare apply/run/diff auto-compose |
 | `reports/` | Multi-host matrix evidence templates and run notes |
-| `demo/` | Everything for the sales video: shooting script, screen↔seed map, scripted GUI walk |
+| `demo/` | Everything for the sales video: shooting script, screen-to-seed map, scripted GUI walk |
 | `SPEC.md` | Spec-driven design (goal, invariants, tasks) |
 | `.env` | Secrets only (local — never commit); pin+where live in `matrix.yaml` |
 
@@ -96,11 +96,11 @@ acu run scenario/10-seed-capital.yaml && acu state --assert-unchanged
 | `acu schema` | Dump endpoint OpenAPI into `schemas/` |
 | `acu inventory ARTIFACT` | Offline: SM203520 Settings XML ZIP / `ac.exe export xml` into `inventory/` |
 | `acu reconcile` | Offline: `inventory/` vs optional `config/` into `findings/` |
-| `acu check --all --yes` | Cold lifecycle every `matrix.yaml` cell (delete→create→apply→run→diff→delete) |
+| `acu check --all --yes` | Cold lifecycle every `matrix.yaml` cell (delete, create, apply, run, diff, delete) |
 | `make check` | Same as `acu check --all` for lab matrix (tenant `GITOPS` by default) |
 | `make check HOST=25r1` | Same E2E for one matrix cell only (`acu --cell 25r1 check`) |
 
-### CLI floor (acumatica-cli ≥ 0.24.0)
+### CLI floor (acumatica-cli at least 0.24.0)
 
 | Capability | Why it matters here |
 |------------|---------------------|
@@ -116,12 +116,12 @@ and [acu-cli#29](https://github.com/kborovik/acu-cli/issues/29).
 
 ## Pitch path
 
-Promo scripts live under `demo/` (acu-walk ≥ **0.7**):
+Promo scripts live under `demo/` (acu-walk at least **0.7**):
 
 | Script | Pitch |
 |--------|--------|
-| [demo/tenant-factory-walk.yaml](demo/tenant-factory-walk.yaml) | Demo Tenant Factory (empty → masters → linked history) |
-| [demo/major-release-regression-walk.yaml](demo/major-release-regression-walk.yaml) | Major-release regression service (matrix cells + gate) |
+| [demo/tenant-factory-walk.yaml](demo/tenant-factory-walk.yaml) | Demo Tenant Factory (empty to masters to linked history) |
+| [demo/walk.yaml](demo/walk.yaml) | Major-release regression service (matrix cells + gate) |
 
 Short version (tenant-factory):
 
@@ -144,9 +144,7 @@ acu-walk -f demo/tenant-factory-walk.yaml clean --yes
 acu-walk -f demo/tenant-factory-walk.yaml record --yes
 
 # Major-release regression on a matrix cell (film host)
-make record WALK=demo/major-release-regression-walk.yaml CELL=25r1
-# or:
-acu-walk -f demo/major-release-regression-walk.yaml --cell 25r1 record --yes
+acu-walk -f demo/walk.yaml --cell 25r1 record --yes
 
 # VO re-mux only / validate
 acu-walk -f demo/tenant-factory-walk.yaml record --vo
@@ -181,9 +179,8 @@ and optional overlays — **not** long-running release branches as product lines
 
 **Trunk branch:** `main` (lab cells in `matrix.yaml`; default cell `26r1`).
 
-**Retire** long-running `acu-25r1` / `acu-25r2` after trunk+overlay is green
-on lab — plan and commands: [reports/retire-release-branches.md](reports/retire-release-branches.md).
-Do not treat those branches as product lines.
+Long-running `acu-25r1` / `acu-25r2` / `acu-26r1` are not product lines.
+Retire leftover release branches only after trunk+overlay is green on lab.
 
 | Piece | Role |
 |-------|------|
@@ -204,14 +201,14 @@ Committed `matrix.yaml` is the sole pin+where registry. Each lab host is a cell:
 
 `acu` resolves contract API from `--api-version`, else active cell `default_api`,
 else the CLI code default — never `ACU_API_VERSION` in `.env`.
-REST where: `--url` → optional `ACU_BASE_URL` → cell `base_url`.
+REST where: `--url`, then optional `ACU_BASE_URL`, then cell `base_url`.
 Pins must be **host-true** from live check (invalid Default halves forbidden).
-Canonical table: [reports/matrix-pins.md](reports/matrix-pins.md).
+Pin table above matches committed `matrix.yaml` cells.
 
 ### Overlay compose
 
 Overlays live under `overlays/default-<default_api>/`. With host-true matrix
-cells, **bare** commands auto-compose the pin overlay (acu-cli ≥ 0.24.0).
+cells, **bare** commands auto-compose the pin overlay (acu-cli at least 0.24.0).
 Explicit path args disable auto.
 
 ```sh
