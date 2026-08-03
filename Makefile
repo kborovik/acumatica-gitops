@@ -29,18 +29,9 @@ check: ## Full E2E matrix lifecycle (acu check; recreate tenant each cell)
 		acu check --all --yes --tenant $(CHECK_TENANT)
 	fi
 
-# acu-walk globals (--script/-f, --cell, --tenant, …) must precede the subcommand.
-record: ## Record a YouTube video (WALK=… CELL=… optional)
-	acu tenant delete --login $(CHECK_TENANT) --yes || true
-	if [[ -n "$(CELL)" ]]; then
-		$(call header,record script=$(WALK) cell=$(CELL) tenant=$(CHECK_TENANT))
-		acu-walk -f "$(WALK)" --cell "$(CELL)" clean --yes
-		acu-walk -f "$(WALK)" --cell "$(CELL)" record --yes
-	else
-		$(call header,record script=$(WALK) tenant=$(CHECK_TENANT))
-		acu-walk -f "$(WALK)" clean --yes
-		acu-walk -f "$(WALK)" record --yes
-	fi
+record: ## Record a YouTube video
+	acu-walk config validate
+	acu-walk record
 
 ###############################################################################
 # Colors and Headers
