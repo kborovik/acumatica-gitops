@@ -76,7 +76,9 @@ beats:
   # ===========================================================================
 
   - id: "01-intent"
-    screen: login
+    # Static still: trunk seed → matrix.yaml → three majors → cold lifecycle
+    # (acu-walk V27 image: beat; source diagram from lab5 matrix blog post).
+    image: demo/assets/matrix-intent.png
     vo: >
       In this film we certify a GitOps seed for LAB5 Electronics. That seed is
       version-controlled company setup: the company record, chart of accounts,
